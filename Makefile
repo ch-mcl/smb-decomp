@@ -130,7 +130,7 @@ SOURCES := \
 	asm/bg_old_water.s \
 	src/bg_jungle.c \
 	asm/bg_sand.s \
-	asm/bg_water.s \
+	src/bg_water.c \
 	asm/bg_space.s \
 	src/bg_sunset.c \
 	src/bg_bonus.c \
@@ -142,7 +142,9 @@ SOURCES := \
 	src/item.c \
 	src/item_coin.c \
 	src/item_pilot.c \
-	asm/stobj.s \
+	src/obj_collision.c \
+	src/stobj.c \
+	src/stobj_goal.c \
 	src/sprite.c \
 	src/textbox.c \
 	src/hud.c \
@@ -157,7 +159,7 @@ SOURCES := \
 	src/load.c \
 	asm/shadow.s \
 	asm/mini.s \
-	asm/mouse.s \
+	src/mouse.c \
 	asm/rend_efc.s \
 	src/relocation.c \
 	src/gxutil.c \
@@ -169,7 +171,8 @@ SOURCES := \
 	src/code_6.c \
 	asm/mini_ranking.s \
 	src/preview.c \
-	asm/code_4.s \
+	asm/name_entry.s \
+	asm/credits.s \
 	asm/vibration.s \
 	libraries/base/asm/PPCArch.s \
 	libraries/os/__start.c \

@@ -8,10 +8,13 @@
 #include "event.h"
 #include "info.h"
 #include "item.h"
+#include "obj_collision.h"
 #include "perf.h"
 #include "sprite.h"
 #include "stage.h"
+#include "stobj.h"
 #include "world.h"
+#include "mouse.h"
 
 struct Event eventInfo[] =
 {
