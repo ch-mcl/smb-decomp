@@ -640,7 +640,9 @@ extern u8 lbl_80292E70[];
 // extern ? fileLoadQueue;
 // extern ? fileCache;
 // extern ? aramRequest;
-extern u8 lbl_802B57A0[];
+
+// extern u8 lbl_802B57A0[];
+
 // extern ? lbl_802B8FA0;
 // extern ? lbl_802B90F0;
 // extern ? lbl_802B9360;
@@ -1394,8 +1396,7 @@ extern u32 *motLabel;
 // extern ? mramToAramInProgress;
 // extern ? currFileCacheIndex;
 // extern ? aramToMramInProgress;
-extern u32 lbl_802F2150;
-extern void *lbl_802F2154;
+
 // extern ? lbl_802F2158;
 // extern ? lbl_802F215C;
 // extern ? lbl_802F2160;

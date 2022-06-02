@@ -157,6 +157,7 @@ SOURCES := \
 	src/lzs_decompress.c \
 	src/avdisp.c \
 	src/load.c \
+	src/shadow.c \
 	asm/shadow.s \
 	asm/mini.s \
 	src/mouse.c \

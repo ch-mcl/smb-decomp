@@ -451,8 +451,8 @@ shadowerase_main:
 /* 80092B80 0008EAA0  3C 60 80 2B */	lis r3, lbl_802B57A0@ha
 /* 80092B84 0008EAA4  38 03 57 A0 */	addi r0, r3, lbl_802B57A0@l
 /* 80092B88 0008EAA8  38 60 00 00 */	li r3, 0
-/* 80092B8C 0008EAAC  90 0D 9F 74 */	stw r0, lbl_802F2154@sda21(r13)
-/* 80092B90 0008EAB0  90 6D 9F 70 */	stw r3, lbl_802F2150@sda21(r13)
+/* 80092B8C 0008EAAC  90 0D 9F 74 */	stw r0, lbl_802F2154@sda21(r13) /* Mem[ 0 + lbl_802F2154 ] = lbl_802B57A0 */
+/* 80092B90 0008EAB0  90 6D 9F 70 */	stw r3, lbl_802F2150@sda21(r13) /* Mem[ 0 + lbl_802F2150 ] = 0 */
 /* 80092B94 0008EAB4  4E 80 00 20 */	blr
 
 .global u_init_shadow_stuff_probably
@@ -13704,9 +13704,11 @@ lbl_802F1358:
 
 .section .bss
 
+.if 0
 .global lbl_802B8FA0
 lbl_802B8FA0:
 	.skip 0x150
+.endif
 .global lbl_802B90F0
 lbl_802B90F0:
 	.skip 0x270
@@ -13722,6 +13724,7 @@ lbl_802B9390:
 
 .section .sbss
 
+.if 0
     .balign 8
 .global lbl_802F2150
 lbl_802F2150:
@@ -13729,3 +13732,4 @@ lbl_802F2150:
 .global lbl_802F2154
 lbl_802F2154:
 	.skip 0x4
+.endif
