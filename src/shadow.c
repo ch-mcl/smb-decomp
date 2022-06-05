@@ -21,7 +21,7 @@ struct Struct802B8FA0 {
     /* 0x120 */ float unk120[12];
 };
 
-struct Shadow lbl_802B57A0;
+struct Shadow shadow;
 struct Struct802B8FA0 lbl_802B8FA0;
 
 struct Shadow *lbl_802F2154;
@@ -31,5 +31,5 @@ void func_80092498(void)
 {
     func_800924CC();
     lbl_802F2150 = 0;
-    lbl_802F2154 = &lbl_802B57A0;
+    lbl_802F2154 = &shadow;
 }

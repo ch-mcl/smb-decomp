@@ -641,9 +641,9 @@ extern u8 lbl_80292E70[];
 // extern ? fileCache;
 // extern ? aramRequest;
 
-// extern u8 lbl_802B57A0[];
+// extern struct Shadow shadow;
+// extern struct Struct802B8FA0 lbl_802B8FA0;
 
-// extern ? lbl_802B8FA0;
 // extern ? lbl_802B90F0;
 // extern ? lbl_802B9360;
 // extern ? lbl_802B9370;
