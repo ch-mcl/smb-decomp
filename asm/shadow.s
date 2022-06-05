@@ -30,6 +30,7 @@ func_800924CC:
 /* 80092528 0008E448  3C 60 43 30 */	lis r3, 0x4330
 /* 8009252C 0008E44C  C8 A2 AF 90 */	lfd f5, lbl_802F5790@sda21(r2)
 /* 80092530 0008E450  3B 9C 00 40 */	addi r28, r28, 0x40
+
 lbl_80092534:
 /* 80092534 0008E454  38 00 00 02 */	li r0, 2
 /* 80092538 0008E458  7C 09 03 A6 */	mtctr r0
@@ -633,7 +634,7 @@ lbl_80092DD8:
 /* 80092E20 0008ED40  EC 21 00 72 */	fmuls f1, f1, f1
 /* 80092E24 0008ED44  EC 22 08 BA */	fmadds f1, f2, f2, f1
 /* 80092E28 0008ED48  EC 20 08 3A */	fmadds f1, f0, f0, f1
-/* 80092E2C 0008ED4C  4B F7 42 CD */	bl mathutil_sqrt
+/* 80092E2C 0008ED4C  4B F7 42 CD */	bl mathutil_sqrt /* get magnitude/distance */
 /* 80092E30 0008ED50  C0 1D 00 1C */	lfs f0, 0x1c(r29)
 /* 80092E34 0008ED54  C0 5D 00 30 */	lfs f2, 0x30(r29)
 /* 80092E38 0008ED58  EC 00 07 72 */	fmuls f0, f0, f29
@@ -13709,6 +13710,8 @@ lbl_802F1358:
 lbl_802B8FA0:
 	.skip 0x150
 .endif
+
+# these seems to using on mini.s
 .global lbl_802B90F0
 lbl_802B90F0:
 	.skip 0x270
