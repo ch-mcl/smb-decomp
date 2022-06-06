@@ -33,3 +33,12 @@ void func_80092498(void)
     lbl_802F2150 = 0;
     lbl_802F2154 = &shadow;
 }
+
+// void func_800924CC(void) {
+
+// }
+
+// void shadowerase_main(void) {
+//     lbl_802F2154 = &shadow;
+//     lbl_802F2150 = 0;
+// }

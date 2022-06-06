@@ -3803,21 +3803,25 @@ extern const s8 pauseMenuItemCounts[8];
 // extern ? lbl_802F5730;
 // extern ? lbl_802F5738;
 // extern ? invalidModelName;
-// extern ? lbl_802F5780;
-// extern ? lbl_802F5784;
-// extern ? lbl_802F5788;
-// extern ? lbl_802F578C;
-// extern ? lbl_802F5790;
-// extern ? lbl_802F5798;
-// extern ? lbl_802F579C;
-// extern ? lbl_802F57A0;
-// extern ? lbl_802F57A4;
-// extern ? lbl_802F57A8;
-// extern ? lbl_802F57B0;
-// extern ? lbl_802F57B8;
-// extern ? lbl_802F57BC;
-// extern ? lbl_802F57C0;
-// extern ? lbl_802F57C4;
+
+// shadow
+// extern float l_lbl_802F5780;
+// extern float l_lbl_802F5784;
+// extern float l_lbl_802F5788;
+// extern float l_lbl_802F578C;
+// extern double l_shadow_s32_to_float;
+// extern float l_lbl_802F5798;
+// extern float l_lbl_802F579C;
+// extern float l_lbl_802F57A0;
+// extern float l_lbl_802F57A4;
+// extern float l_lbl_802F57A8;
+// extern float l_lbl_802F57B0;
+// extern GXColor l_shadow_color;
+// extern float l_lbl_802F57BC;
+// extern float l_lbl_802F57C0;
+// extern float l_lbl_802F57C4;
+
+// mini
 // extern ? lbl_802F57C8;
 // extern ? lbl_802F57CC;
 // extern ? lbl_802F57D0;
