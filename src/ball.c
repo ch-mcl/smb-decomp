@@ -1262,9 +1262,9 @@ void u_ball_shadow_something_1(void)
         if (ball->flags & BALL_FLAG_INVISIBLE)
             continue;
         sp18.unk38 = ballShadowColors[ball->colorId];
-        sp18.unk0 = spC.x + ball->pos.x;
-        sp18.unk4 = spC.y + ball->pos.y;
-        sp18.unk8 = spC.z + ball->pos.z;
+        sp18.unk0.x = spC.x + ball->pos.x;
+        sp18.unk0.y = spC.y + ball->pos.y;
+        sp18.unk0.z = spC.z + ball->pos.z;
         sp18.unkC = 5.0f;
         sp18.unk10 = ball->pos;
         sp18.unk1C = ball->currRadius * 1.4f;

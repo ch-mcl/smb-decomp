@@ -394,19 +394,17 @@ struct NaomiObj;
 
 struct Struct80092B98
 {
-    float unk0;
-    float unk4;
-    float unk8;
-    float unkC;
-    Vec unk10;
-    float unk1C;
-    Vec unk20;
-    s16 unk2C;
-    u16 unk2E;
-    float unk30;
-    float unk34;
-    GXColor unk38;
-    void *unk3C;
+    /* 0x00 */Vec unk0;
+    /* 0x0C */ float unkC;
+    /* 0x10 */ Vec unk10;
+    /* 0x1C */ float unk1C;
+    /* 0x20 */ Vec unk20;
+    /* 0x2C */ s16 unk2C;
+    /* 0x2E */ u16 unk2E;
+    /* 0x30 */ float unk30;
+    /* 0x34 */ float unk34;
+    /* 0x38 */ GXColor unk38;
+    /* 0x40 */ void *unk3C;
 };  // size = 0x40
 
 struct Struct8009492C
