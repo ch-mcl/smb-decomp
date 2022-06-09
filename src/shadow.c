@@ -5,20 +5,19 @@
 #include "shadow.h"
 #include "gxcache.h"
 
-
 struct Shadow {
     /* 0x000 */ struct Struct80092B98 unk000;
     /* 0x040 */ float *unk040;
     /* 0x044 */ Vec unk044;
-    /* 0x050 */ float unk050;
-    /* 0x054 */ float unk054;
-    /* 0x058 */ float unk058;
-    /* 0x05C */ u8 unk0x5C[0x68 - 0x5C];
-    /* 0x068 */ Vec unk068;
-    /* 0x074 */ u8 unk[0x3800 - 0x74];
-
-
-
+    /* 0x050 */ float distance;
+    /* 0x054 */ float div_distance;
+    /* 0x058 */ float distance2;
+    /* 0x05C */ u8 unk0x5C[0x68 - 0x5C]; // 0xC Vec?
+    /* 0x068 */ Vec position;
+    /* 0x074 */ u8 unk[0xB0 - 0x74];
+    /* 0x0B0 */ Mtx unk0b0;
+    /* 0x0E0 */ struct Shadow *child;
+    /* 0x0E4 */ u8 unk0E4[0x3800 - 0xE4];
 };
 
 struct Struct802B8FA0 {

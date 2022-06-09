@@ -21,6 +21,7 @@
 #include "world.h"
 #include "stcoli.h"
 #include "light.h"
+#include "shadow.h"
 
 #include "../data/common.gma.h"
 #include "../data/common.nlobj.h"
