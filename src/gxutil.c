@@ -55,28 +55,36 @@ void gxutil_set_vtx_attrs(u32 attrs)
 
 void gxutil_dummy(void) {}
 
-#ifdef __MWERKS__
-asm void u_gxutil_upload_some_mtx(Mtx a, int b)
+#ifdef C_ONLY
+void u_gxutil_upload_some_mtx(register Mtx mtx, register int index)
+{
+    GXLoadPosMtxImm(mtx, index * 3);
+    GXLoadNrmMtxImm(mtx, index * 3);
+}
+#else
+asm void u_gxutil_upload_some_mtx(register Mtx mtx, register int index)
 {
     nofralloc
     mr r5, r4
-    add r4, r4, r4
-    add r4, r4, r5
+    add r4, r4, r4  // r4 = index * 2
+    add r4, r4, r5  // r4 = index * 3
     li r7, 0x10
-    add r5, r4, r4
+    add r5, r4, r4  // r5 = index * 6
     lis r6, GXFIFO_ADDR@h
-    add r4, r5, r4
+    add r4, r5, r4  // r4 = index * 9
     ori r6, r6, GXFIFO_ADDR@l
-    add r5, r5, r5
+    add r5, r5, r5   // r5 = index * 12
     addis r5, r5, 0xb
     stb r7, 0(r6)
     stw r5, 0(r6)
-    psq_l f0, 0(r3), 0, qr0
-    psq_l f1, 8(r3), 0, qr0
-    psq_l f2, 16(r3), 0, qr0
-    psq_l f3, 24(r3), 0, qr0
-    psq_l f4, 32(r3), 0, qr0
-    psq_l f5, 40(r3), 0, qr0
+
+    // Copy matrix into FIFO
+    psq_l f0, 0(mtx), 0, qr0
+    psq_l f1, 8(mtx), 0, qr0
+    psq_l f2, 16(mtx), 0, qr0
+    psq_l f3, 24(mtx), 0, qr0
+    psq_l f4, 32(mtx), 0, qr0
+    psq_l f5, 40(mtx), 0, qr0
     psq_st f0, 0(r6), 0, qr0
     psq_st f1, 0(r6), 0, qr0
     psq_st f2, 0(r6), 0, qr0
@@ -95,8 +103,6 @@ asm void u_gxutil_upload_some_mtx(Mtx a, int b)
     psq_st f5, 0(r6), 1, qr0
     blr
 }
-#else
-// TODO
 #endif
 
 #pragma peephole on  // above function isn't pure asm?
@@ -141,26 +147,26 @@ void u_init_bg_fog_params(void)
 void func_8009AB5C(void)
 {
     avdisp_enable_fog(fogInfo.enabled);
-    func_80033B50(fogInfo.enabled);
+    nl2ngc_enable_fog(fogInfo.enabled);
     if (fogInfo.enabled != 0)
     {
         avdisp_set_fog_params(fogInfo.unk0, fogInfo.unk4, fogInfo.unk8);
         avdisp_set_fog_color(fogInfo.r, fogInfo.g, fogInfo.b);
-        func_80033B58(fogInfo.unk0, fogInfo.unk4, fogInfo.unk8);
-        u_nl2ngc_set_some_other_color(fogInfo.r, fogInfo.g, fogInfo.b);
+        nl2ngc_set_fog_params(fogInfo.unk0, fogInfo.unk4, fogInfo.unk8);
+        nl2ngc_set_fog_color(fogInfo.r, fogInfo.g, fogInfo.b);
     }
 }
 
 void func_8009AC0C(s8 a)
 {
     avdisp_enable_fog(a);
-    func_80033B50(a);
+    nl2ngc_enable_fog(a);
 }
 
 void func_8009AC44(void)
 {
     avdisp_enable_fog(fogInfo.enabled);
-    func_80033B50(fogInfo.enabled);
+    nl2ngc_enable_fog(fogInfo.enabled);
 }
 
 void func_8009AC8C(void)
@@ -194,12 +200,12 @@ void gxutil_set_line_width(int width)
     lineInfo.lineWidth = width;
 }
 
-void u_gxutil_set_some_line_params(int a, int b, int c, int d)
+void gxutil_set_line_blend_params(GXBlendMode mode, GXBlendFactor srcFactor, GXBlendFactor dstFactor, GXLogicOp logicOp)
 {
-    lineInfo.blendMode = a;
-    lineInfo.blendSrcFactor = b;
-    lineInfo.blendDstFactor = c;
-    lineInfo.blendLogicOp = d;
+    lineInfo.blendMode = mode;
+    lineInfo.blendSrcFactor = srcFactor;
+    lineInfo.blendDstFactor = dstFactor;
+    lineInfo.blendLogicOp = logicOp;
 }
 
 void gxutil_draw_line(Vec *start, Vec *end, GXColor *c)

@@ -1,29 +1,30 @@
 #ifndef _MATH_H_
 #define _MATH_H_
 
-// stop gcc from complaining
 #ifndef __MWERKS__
-extern int __abs(int);
-extern float __fabs(float);
-extern float __frsqrte(float);
+static inline int __abs(int n)
+{
+    int mask = n >> 31;
+    return (n + mask) ^ mask;
+}
 #endif
 
 #define NAN       (0.0f / 0.0f)
 #define HUGE_VALF (1.0f / 0.0f)
 #define INFINITY  (1.0f / 0.0f)
 
-#define FLT_EPSILON 1.1920928955078125e-07f
-
 double fabs(double x);
 double sin(double x);
 double cos(double x);
 
 float sinf(float x);
+float cosf(float x);
+float tanf(float x);
 float acosf(float x);
 
 double ldexp(double x, int exp);
 
-inline int abs(int n) { return(__abs(n)); }
+static inline int abs(int n) { return(__abs(n)); }
 
 double scalbn(double x, int n);
 

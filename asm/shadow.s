@@ -1001,7 +1001,7 @@ lbl_80093370:
 lbl_80093394:
 /* 80093394 0008F2B4  80 61 00 64 */	lwz r3, 0x64(r1)
 /* 80093398 0008F2B8  7F 24 CB 78 */	mr r4, r25
-/* 8009339C 0008F2BC  4B FA 0C B1 */	bl u_draw_naomi_model_with_mesh_func
+/* 8009339C 0008F2BC  4B FA 0C B1 */	bl u_nl2ngc_draw_model_with_mesh_func
 /* 800933A0 0008F2C0  48 00 00 18 */	b lbl_800933B8
 lbl_800933A4:
 /* 800933A4 0008F2C4  80 61 00 64 */	lwz r3, 0x64(r1)
@@ -1055,7 +1055,7 @@ lbl_80093448:
 /* 80093448 0008F368  3C 80 80 09 */	lis r4, lbl_800939F0@ha
 /* 8009344C 0008F36C  80 61 00 64 */	lwz r3, 0x64(r1)
 /* 80093450 0008F370  38 84 39 F0 */	addi r4, r4, lbl_800939F0@l
-/* 80093454 0008F374  4B FA 0B F9 */	bl u_draw_naomi_model_with_mesh_func
+/* 80093454 0008F374  4B FA 0B F9 */	bl u_nl2ngc_draw_model_with_mesh_func
 /* 80093458 0008F378  48 00 00 18 */	b lbl_80093470
 lbl_8009345C:
 /* 8009345C 0008F37C  80 61 00 64 */	lwz r3, 0x64(r1)
@@ -1580,50 +1580,6 @@ lbl_80171AA4:
 	.4byte 0
 	.4byte 0
 	.4byte 0xBF800000
-
-.global lbl_80171AB0
-lbl_80171AB0:
-	# ROM: 0x16EAB0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-
-.global lbl_80171B10
-lbl_80171B10:
-	# ROM: 0x16EB10
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0x3F800000
-	.4byte 0
-	.4byte 0
-	.4byte 0
 
 .section .data
 
@@ -13606,58 +13562,6 @@ glabel string_COURSE__d__n
 glabel string_PLAYER__d__n
 	.asciz "PLAYER[%d]\n"
 	.4byte 0
-
-.global lbl_801D3CE8
-lbl_801D3CE8:
-	# ROM: 0x1D0CE8
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte 0
-	.4byte func_8009557C  ;# ptr
-	.4byte func_800955FC  ;# ptr
-	.4byte func_8009562C  ;# ptr
-	.4byte func_80095630  ;# ptr
-	.4byte func_80095C6C  ;# ptr
-	.4byte func_80095D3C  ;# ptr
-	.4byte func_80095D90  ;# ptr
-	.4byte func_80095D94  ;# ptr
-	.4byte func_80096134  ;# ptr
-	.4byte func_80096228  ;# ptr
-	.4byte func_80096258  ;# ptr
-	.4byte func_800963AC  ;# ptr
-	.4byte func_80096A30  ;# ptr
-	.4byte func_80096B3C  ;# ptr
-	.4byte func_80096BA8  ;# ptr
-	.4byte func_80096BE0  ;# ptr
-	.4byte func_800973A0  ;# ptr
-	.4byte func_80097664  ;# ptr
-	.4byte func_800976B8  ;# ptr
-	.4byte func_800976BC  ;# ptr
-	.4byte func_8009826C  ;# ptr
-	.4byte func_800983A0  ;# ptr
-	.4byte func_8009840C  ;# ptr
-	.4byte func_80098410  ;# ptr
-
-.global lbl_801D3D58
-lbl_801D3D58:
-	# ROM: 0x1D0D58
-	.4byte lbl_80097304  ;# ptr
-	.4byte lbl_80097390  ;# ptr
-	.4byte lbl_80097304  ;# ptr
-	.4byte lbl_80097390  ;# ptr
-	.4byte lbl_80097304  ;# ptr
-	.4byte lbl_80097390  ;# ptr
-	.4byte lbl_80097390  ;# ptr
-	.4byte lbl_80097304  ;# ptr
-
-.global lbl_801D3D78
-lbl_801D3D78:
-	# ROM: 0x1D0D78
-	.4byte func_800993A8  ;# ptr
-	.4byte func_800994A8  ;# ptr
-	.4byte func_80099518  ;# ptr
-	.4byte func_80099968  ;# ptr
 
 .section .sdata
 

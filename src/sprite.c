@@ -11,6 +11,7 @@
 #include "gxcache.h"
 #include "mathutil.h"
 #include "mode.h"
+#include "pool.h"
 #include "sprite.h"
 #include "textbox.h"
 
@@ -40,23 +41,21 @@ struct Struct8028FE58
 // .bss
 struct TextDrawInfo textDrawInfo;
 FORCE_BSS_ORDER(textDrawInfo)
-struct Sprite spriteInfo[64];
+struct Sprite spriteInfo[MAX_SPRITES];
 FORCE_BSS_ORDER(spriteInfo)
 struct Struct8028FE58 lbl_8028FE58[0x42];
 FORCE_BSS_ORDER(lbl_8028FE58)
 struct ScreenFadeInfo screenFadeInfo;
 FORCE_BSS_ORDER(screenFadeInfo)
 
-extern struct SpritePoolInfo spritePoolInfo;  // 0x80205988
-
 u32 lbl_802F2000;
 
 void ev_sprite_init(void)
 {
-    s8 *status = spritePoolInfo.statusList;
+    s8 *status = g_poolInfo.spritePool.statusList;
     int i;
 
-    for (i = 0; i < spritePoolInfo.unk38; i++, status++)
+    for (i = 0; i < g_poolInfo.spritePool.count; i++, status++)
         *status = 0;
 
     textDrawInfo.startX = 0.0f;
@@ -82,9 +81,9 @@ void ev_sprite_main(void)
     if (gamePauseStatus & 0xA)
         return;
     lbl_802F2000 = 0;
-    status = spritePoolInfo.statusList;
+    status = g_poolInfo.spritePool.statusList;
     sprite = spriteInfo;
-    for (i = 0; i < spritePoolInfo.unk38; i++, sprite++, status++)
+    for (i = 0; i < g_poolInfo.spritePool.count; i++, sprite++, status++)
     {
         if (*status != 0)
         {
@@ -100,11 +99,11 @@ void ev_sprite_dest(void)
 {
     struct Sprite *sprite;
     s8 *status;
-    int i = 0;
+    int i;
 
     sprite = spriteInfo;
-    status = spritePoolInfo.statusList;
-    for (; i < 64; i++, sprite++, status++)
+    status = g_poolInfo.spritePool.statusList;
+    for (i = 0; i < MAX_SPRITES; i++, sprite++, status++)
     {
         if (*status != 0)
         {
@@ -114,7 +113,7 @@ void ev_sprite_dest(void)
         }
     }
 
-    spritePoolInfo.unk34 = 0;
+    g_poolInfo.spritePool.nextFree = 0;
     lbl_802F2000 = 0;
     textbox_destroy_all();
 }
@@ -141,8 +140,8 @@ void func_800700D8(int a)
     r9->unk4 = r5;
     r9->unk8 = NULL;
 
-    r11 = spritePoolInfo.statusList;
-    for (i = 0; i < spritePoolInfo.unk38; i++, r11++)
+    r11 = g_poolInfo.spritePool.statusList;
+    for (i = 0; i < g_poolInfo.spritePool.count; i++, r11++)
     {
         struct Sprite *r8;
 
@@ -214,7 +213,7 @@ void func_800700D8(int a)
 //arcade: FUN_0c048ea0
 void func_800702C8(struct Sprite *sprite)
 {
-    if (spritePoolInfo.statusList[sprite->unk2] != 0 && sprite->unk50 == NULL)
+    if (g_poolInfo.spritePool.statusList[sprite->unk2] != 0 && sprite->unk50 == NULL)
     {
         u_something_with_sprites(sprite);
         while (sprite->next != NULL)
@@ -921,7 +920,7 @@ void free_all_bitmap_groups_except_com(void)
 
 struct Sprite *create_sprite(void)
 {
-    int index = pool_alloc(spritePoolInfo.unk30, 2);
+    int index = pool_alloc(&g_poolInfo.spritePool, 2);
 
     if (index < 0)
         return NULL;
@@ -966,10 +965,10 @@ struct Sprite *create_linked_sprite(struct Sprite *sprite)
 void destroy_sprite_with_tag(int tag)
 {
     struct Sprite *sprite = spriteInfo;
-    s8 *status = spritePoolInfo.statusList;
+    s8 *status = g_poolInfo.spritePool.statusList;
     int i;
 
-    for (i = 0; i < 64; i++)
+    for (i = 0; i < MAX_SPRITES; i++)
     {
         if (*status != 0 && sprite->tag == tag)
         {
@@ -986,10 +985,10 @@ void destroy_sprite_with_tag(int tag)
 void destroy_all_sprites(void)
 {
     struct Sprite *sprite = spriteInfo;
-    s8 *status = spritePoolInfo.statusList;
+    s8 *status = g_poolInfo.spritePool.statusList;
     int i;
 
-    for (i = 0; i < 64; i++)
+    for (i = 0; i < MAX_SPRITES; i++)
     {
         if (*status != 0)
         {
@@ -1006,10 +1005,10 @@ void destroy_all_sprites(void)
 struct Sprite *find_sprite_with_tag(int tag)
 {
     struct Sprite *sprite = spriteInfo;
-    s8 *status = spritePoolInfo.statusList;
+    s8 *status = g_poolInfo.spritePool.statusList;
     int i;
 
-    for (i = 0; i < 64; i++, sprite++, status++)
+    for (i = 0; i < MAX_SPRITES; i++, sprite++, status++)
     {
         if (*status != 0 && sprite->tag == tag)
             return sprite;
@@ -2679,6 +2678,7 @@ static inline int func_80071E58_inline(int chr, int fontId, struct FontParams *f
         case ' ':
             return 12;
         }
+        // fall through
     default:
     case FONT_JAP_24x24_I:
         return font->spaceWidth;
@@ -3077,13 +3077,13 @@ float func_80072DA8(int fontId, char *str, int c)
             font = &fontInfo[FONT_JAP_24x24_2P];
             fontId = FONT_JAP_24x24_2P;
         }
-        else if (sp20 == 0x46)
+        else if (sp20 == 70)
             f31 = 0.7f;
-        else if (sp20 == 0x50)
+        else if (sp20 == 80)
             f31 = 0.8f;
-        else if (sp20 == 0x5A)
+        else if (sp20 == 90)
             f31 = 0.9f;
-        else if (sp20 == 0x64)
+        else if (sp20 == 100)
             f31 = 1.0f;
         str += skip;
         if (glyphIndex == -1 || glyphIndex == -2)
@@ -3108,6 +3108,7 @@ float func_80072DA8(int fontId, char *str, int c)
                     break;
                 }
             }
+            // fall through
         default:
             f2 = 1.0f;
             break;
@@ -3422,7 +3423,7 @@ int draw_naomi_sprite(struct NaomiSpriteParams *params)
     return 0;
 }
 
-void func_80073E00(int a, GXTexWrapMode s, GXTexWrapMode t)
+void func_80073E00(int bmpId, GXTexWrapMode s, GXTexWrapMode t)
 {
-    GXInitTexObjWrapMode(&bitmapGroups[(a >> 8) & 0xFF].tpl->texObjs[a & 0xFF], s, t);
+    GXInitTexObjWrapMode(&bitmapGroups[(bmpId >> 8) & 0xFF].tpl->texObjs[bmpId & 0xFF], s, t);
 }

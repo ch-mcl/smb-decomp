@@ -10,7 +10,7 @@
 #include "stcoli.h"
 #include "gma.h"
 
-static struct BGModelSearch stormModelFind[] =
+static struct BGModelSearch stormBgModelFind[] =
 {
     { BG_MDL_CMP_FULL, "STM_RAIN00" },
     { BG_MDL_CMP_FULL, "STM_RAIN01" },
@@ -18,7 +18,7 @@ static struct BGModelSearch stormModelFind[] =
     { BG_MDL_CMP_END,  NULL },
 };
 
-static int storm_model_find_proc(int, struct GMAModelEntry *);
+static int model_find_proc(int, struct GMAModelEntry *);
 
 void bg_storm_init(void)
 {
@@ -26,22 +26,22 @@ void bg_storm_init(void)
     int i;
     struct BGStormWork_child *r28;
 
-    bg_e3_init();
+    bg_default_init();
     if (work->unk0 == 0)
-        u_search_bg_models(stormModelFind, storm_model_find_proc);
-    work->unk10.x = ((rand() / 32767.0f) - 0.5f) * 6.0f;
-    work->unk10.y = ((rand() / 32767.0f) - 0.5f) * 9.0f;
-    work->unk10.z = ((rand() / 32767.0f) - 0.5f) * 6.0f;
-    work->unk1C.x = ((rand() / 32767.0f) - 0.5f) * 0.1f;
+        find_background_gma_models(stormBgModelFind, model_find_proc);
+    work->unk10.x = (RAND_FLOAT() - 0.5f) * 6.0f;
+    work->unk10.y = (RAND_FLOAT() - 0.5f) * 9.0f;
+    work->unk10.z = (RAND_FLOAT() - 0.5f) * 6.0f;
+    work->unk1C.x = (RAND_FLOAT() - 0.5f) * 0.1f;
     work->unk1C.y = -0.25f;
-    work->unk1C.z = ((rand() / 32767.0f) - 0.5f) * 0.1f;
+    work->unk1C.z = (RAND_FLOAT() - 0.5f) * 0.1f;
     r28 = work->unk28;
     for (i = ARRAY_COUNT(work->unk28); i > 0; i--, r28++)
     {
-        r28->unk0 = ((rand() / 32767.0f) - 0.5f) * 6.0f;
-        r28->unk4 = ((rand() / 32767.0f) - 0.5f) * 9.0f;
-        r28->unk8 = ((rand() / 32767.0f) - 0.5f) * 6.0f;
-        r28->unkC = (((rand() / 32767.0f) * 0.5f) + 1.0f) * 0.01f;
+        r28->unk0 = (RAND_FLOAT() - 0.5f) * 6.0f;
+        r28->unk4 = (RAND_FLOAT() - 0.5f) * 9.0f;
+        r28->unk8 = (RAND_FLOAT() - 0.5f) * 6.0f;
+        r28->unkC = ((RAND_FLOAT() * 0.5f) + 1.0f) * 0.01f;
     }
 }
 
@@ -51,7 +51,7 @@ void bg_storm_main(void)
     Vec spDC;
     Vec spD0;
     struct RaycastHit spB4;
-    struct Struct8003C550 sp8;
+    struct Effect sp8;
     int i;
     struct Camera *camera;
 
@@ -59,7 +59,7 @@ void bg_storm_main(void)
         return;
 
     work = backgroundInfo.work;
-    bg_e3_main();
+    bg_default_main();
 
     spDC = work->unk10;
 
@@ -88,15 +88,15 @@ void bg_storm_main(void)
     sp8.unk8 = 35;
     if (lbl_801EEC90.unk0 & 1)
     {
-        spD0.x = (rand() / 32767.0f) - 0.5f;
+        spD0.x = RAND_FLOAT() - 0.5f;
         spD0.y = 0.0f;
-        spD0.z = (rand() / 32767.0f) - 0.5f;
-        mathutil_vec_set_len(&spD0, &sp8.unk34, ((rand() / 32767.0f) + 0.1f) * 3.6000001430511475f);
+        spD0.z = RAND_FLOAT() - 0.5f;
+        mathutil_vec_set_len(&spD0, &sp8.unk34, (RAND_FLOAT() + 0.1f) * 3.6000001430511475f);
         sp8.unk70.y = 1.0f;
         mathutil_vec_to_euler_xy(&spB4.normal, &sp8.unk4C, &sp8.unk4E);
         sp8.unk50 = rand() & 0x7FFF;
         sp8.unk30 = work->rain02Model;
-        u_spawn_effect_object(&sp8);
+        spawn_effect(&sp8);
         return;
     }
     camera = cameraInfo;
@@ -104,10 +104,10 @@ void bg_storm_main(void)
     {
         if (cameraInfo[i].sub28.vp.width > 0.0f && cameraInfo[i].sub28.vp.height > 0.0f)
         {
-            spD0.x = (rand() / 32767.0f) - 0.5f;
+            spD0.x = RAND_FLOAT() - 0.5f;
             spD0.y = 0.0f;
-            spD0.z = (rand() / 32767.0f) - 0.5f;
-            mathutil_vec_set_len(&spD0, &spD0, ((rand() / 32767.0f) + 0.1f) * 3.6000001430511475f);
+            spD0.z = RAND_FLOAT() - 0.5f;
+            mathutil_vec_set_len(&spD0, &spD0, (RAND_FLOAT() + 0.1f) * 3.6000001430511475f);
             spD0.x += camera->lookAt.x;
             spD0.y += camera->lookAt.y + 10.0f;
             spD0.z += camera->lookAt.z;
@@ -118,7 +118,7 @@ void bg_storm_main(void)
                 mathutil_vec_to_euler_xy(&spB4.normal, &sp8.unk4C, &sp8.unk4E);
                 sp8.unk50 = rand() & 0x7FFF;
                 sp8.unk30 = work->rain02Model;
-                u_spawn_effect_object(&sp8);
+                spawn_effect(&sp8);
             }
         }
     }
@@ -150,7 +150,7 @@ void bg_storm_draw(void)
     struct GMAModel *raindropModel;
     float f25;
 
-    bg_e3_draw();
+    bg_default_draw();
     if (lbl_801EEC90.unk0 & (1 << 2))
         return;
     mathutil_mtxA_from_mtx(lbl_802F1B3C->matrices[0]);
@@ -242,20 +242,20 @@ void bg_storm_draw(void)
 
 void bg_storm_interact(int a) {}
 
-static int storm_model_find_proc(int index, struct GMAModelEntry *entry)
+static int model_find_proc(int index, struct GMAModelEntry *entry)
 {
     struct BGStormWork *work = backgroundInfo.work;
 
     switch (index)
     {
     case 0:  // STM_RAIN00
-        work->rain00Model = entry->modelOffset;
+        work->rain00Model = entry->model;
         break;
     case 1:  // STM_RAIN01
-        work->rain01Model = entry->modelOffset;
+        work->rain01Model = entry->model;
         break;
     case 2:  // STM_RAIN02
-        work->rain02Model = entry->modelOffset;
+        work->rain02Model = entry->model;
         break;
     }
     return 1;

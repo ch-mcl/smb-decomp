@@ -272,7 +272,7 @@ struct ColiCircle
     S16Vec rot;
 };
 
-struct StageBgModel
+struct StageBgObject
 {
     u32 flags;
     /*0x04*/ char *name;
@@ -287,7 +287,7 @@ struct StageBgModel
     /*0x2C*/ float translucency;
 
     /*0x30*/ struct StageBgAnim *anim;
-    /*0x34*/ struct UnkStruct8005562C_child2 *unk34;
+    /*0x34*/ struct StageFlipbookAnims *flipbooks;
 };
 
 struct StageAnimGroupAnim
@@ -306,17 +306,10 @@ struct StageAnimGroupAnim
     /*0x2C*/ struct Keyframe *posZKeyframes;
 };
 
-struct DecodedStageLzPtr_child_child3
-{
-    u8 filler0[4];
-    void *unk4;
-    u8 filler8[4];
-}; // size = 0xC
-
 struct DecodedStageLzPtr_child_child4
 {
     void *unk0;
-    u8 filler4[4];
+    struct GMAModel *unk4;
 };  // size = 8
 
 struct StageCollHdr_child2
@@ -389,8 +382,8 @@ struct StageAnimGroup
     /*0x70*/ struct StageColiSphere *coliSpheres;
     /*0x74*/ s32 coliCylinderCount;
     /*0x78*/ struct StageColiCylinder *coliCylinders;
-    s32 unk7C;
-    struct DecodedStageLzPtr_child_child3 *unk80;
+    s32 animGroupModelCount;
+    struct AnimGroupModel *animGroupModels;
     s32 unk84;
     struct StageCollHdr_child2 *unk88;
     s32 unk8C;
@@ -399,10 +392,10 @@ struct StageAnimGroup
     Vec unkB8;
 };  // size = 0xC4
 
-struct StageModel
+struct AnimGroupModel
 {
     u32 unk0;
-    char *nameOffset;
+    char *name;
     float unk8;
 };
 
@@ -471,6 +464,12 @@ struct DecodedStageLzPtr_child6
     struct StageAnimGroupAnim *unk10;
 };
 
+struct StageMirror
+{
+    char *name;
+    struct GMAModel *model;  // filled in at runtime
+};
+
 struct Stage
 {
     s32 loopStartSeconds;
@@ -490,23 +489,23 @@ struct Stage
     /*0x38*/ s32 bananaCount;
     /*0x3C*/ struct StageBanana *bananas;
     s32 coliConeCount;
-    struct ColiCone *coliCones;
+    struct StageColiCone *coliCones;
     s32 coliSphereCount;
-    struct ColiSphere *coliSpheres;
+    struct StageColiSphere *coliSpheres;
     s32 coliCylinderCount;
-    struct ColiCylinder *coliCylinders;
-    /*0x58*/ s32 lvlModelsCount;
-    /*0x5C*/ struct StageModel *lvlModels;
+    struct StageColiCylinder *coliCylinders;
+    /*0x58*/ s32 animGroupModelCount;
+    /*0x5C*/ struct AnimGroupModel *animGroupModels;
     u8 filler60[4];
     void *unk64;
-    /*0x68*/ s32 bgModelsCount;
-    /*0x6C*/ struct StageBgModel *bgModels;
-    s32 fgModelCount;
-    struct StageBgModel *fgModels; // Like bg models but tilt with the stage
+    /*0x68*/ s32 bgObjectCount;
+    /*0x6C*/ struct StageBgObject *bgObjects;
+    /*0x70*/ s32 fgObjectCount;
+    /*0x74*/ struct StageBgObject *fgObjects; // Like bgObjects but tilt with the stage
     struct DecodedStageLzPtr_child5 *unk78;
     s32 unk7C;
-    /*0x80*/ s32 reflObjsCount;
-    /*0x84*/ void *reflObjs;
+    /*0x80*/ s32 mirrorCount;
+    /*0x84*/ void *mirrors;
     struct DecodedStageLzPtr_child6 *unk88;
     u8 filler8C[4];
     void *unk90;
@@ -515,7 +514,7 @@ struct Stage
 void ev_stage_init(void);
 void ev_stage_main(void);
 void ev_stage_dest(void);
-// ? stage_find_model();
+struct GMAModel *stage_find_model(struct GMA *gma, char *name);
 void find_blur_bridge_accordion(void);
 void draw_blur_bridge_accordions(void);
 void animate_anim_groups(float);
@@ -534,12 +533,12 @@ int get_stage_background(int stageId);
 int get_stage_background_2(int stageId);
 void compute_stage_bounding_sphere(void);
 // ? func_800463E8();
-float func_80046884(struct NaomiModel *);
+float func_80046884(struct NlModel *);
 void load_stagedef(int stageId);
 void free_stagedef(void);
 void adjust_stage_anim_ptrs(struct StageAnimGroupAnim **, struct Stage *);
 void func_800473C0(struct StageBgAnim **, struct Stage *);
-void func_800474D8(struct UnkStruct8005562C_child2 **, struct Stage *);
+void adjust_stage_flipbook_anims_ptrs(struct StageFlipbookAnims **, struct Stage *);
 void stage_draw(void);
 
 #endif

@@ -9,12 +9,15 @@
 #include "ball.h"
 #include "bitmap.h"
 #include "camera.h"
+#include "course.h"
 #include "hud.h"
 #include "info.h"
 #include "input.h"
-#define MATHUTIL_SIN_INT_PARAM
 #include "mathutil.h"
 #include "mode.h"
+#include "pool.h"
+#include "ranking_screen.h"
+#include "recplay.h"
 #include "sprite.h"
 #include "textbox.h"
 
@@ -340,9 +343,9 @@ void hud_show_press_start_textbox(int a)
     tbox.callback = press_start_texbox_callback;
     textbox_set_properties(0, 21, &tbox);
     if (a == 3)
-        textbox_set_text(0, "b/Select using the c/0xffffff/p/BUTTON_A/c/0x000000/ Button!");
+        textbox_add_text(0, "b/Select using the c/0xffffff/p/BUTTON_A/c/0x000000/ Button!");
     else
-        textbox_set_text(0, "b/Press Start");
+        textbox_add_text(0, "b/Press Start");
 }
 
 float force_lbl_802F4C80() { return 10.0f; }
@@ -639,7 +642,7 @@ void hud_show_title_banner(int arg0)
         offset = titleSuperOffsets;
         for (i = 0; i < 5; i++, offset++)
         {
-            offset->pos = (arg0 == 1) ? 0.0 : -200.0 + 40.0 * ((rand() / 32767.0f) - 0.5);
+            offset->pos = (arg0 == 1) ? 0.0 : -200.0 + 40.0 * (RAND_FLOAT() - 0.5);
             offset->vel = 0.0f;
         }
 
@@ -647,7 +650,7 @@ void hud_show_title_banner(int arg0)
         r27_ = lbl_80292D08;
         for (i = 0; i < 10; i++, offset++, r27_++)
         {
-            offset->pos = (arg0 == 1) ? 0.0 : 640.0 + 20.0 * ((rand() / 32767.0f) - 0.5);
+            offset->pos = (arg0 == 1) ? 0.0 : 640.0 + 20.0 * (RAND_FLOAT() - 0.5);
             offset->vel = (arg0 == 1) ? 0.0 : -10.0;
             *r27_ = 0;
         }
@@ -718,7 +721,7 @@ static void title_sprite_main(s8 *arg0, struct Sprite *sprite)
         return;
 
     lbl_802F2014 += 0.25 * (1.0 - lbl_802F2014);
-    if (modeCtrl.levelSetFlags & 4)
+    if (modeCtrl.courseFlags & 4)
         lbl_802F2010 += 0.25 * -lbl_802F2010;
     else
         lbl_802F2010 += 0.25 * (1.0 - lbl_802F2010);
@@ -871,7 +874,7 @@ void hud_show_title_menu(void)
 
 static void gamestart_sprite_main(s8 *arg0, struct Sprite *sprite)
 {
-    if ((modeCtrl.levelSetFlags & 4) && textBoxes[0].state == 10)
+    if ((modeCtrl.courseFlags & 4) && textBoxes[0].state == 10)
     {
         sprite->opacity += 0.1 * (1.0 - sprite->opacity);
         if (sprite->counter > 0)
@@ -906,7 +909,7 @@ static void gamestart_sprite_main(s8 *arg0, struct Sprite *sprite)
 
 static void options_sprite_main(s8 *arg0, struct Sprite *sprite)
 {
-    if ((modeCtrl.levelSetFlags & 4) && textBoxes[0].state == 10)
+    if ((modeCtrl.courseFlags & 4) && textBoxes[0].state == 10)
     {
         sprite->opacity += 0.1 * (1.0 - sprite->opacity);
         if (sprite->counter > 0)
@@ -1319,14 +1322,6 @@ static void eieipu_sprite_draw(struct Sprite *sprite)
     }
 }
 
-extern struct
-{
-    s16 unk0;
-    s16 unk2;
-    u32 unk4;
-    u8 filler8[1];
-} lbl_8027CE24;
-
 static void floor_intro_sprite_main(s8 *, struct Sprite *);
 static void floor_intro_sprite_draw(struct Sprite *);
 static void bonus_floor_sprite_main(s8 *, struct Sprite *);
@@ -1345,8 +1340,8 @@ void hud_show_stage_name_banner(void)
         sprite->x = 320.0f;
         sprite->y = 240.0f;
         sprite->unk4C = 0.15f;
-        if ((modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE && (lbl_8027CE24.unk4 & 8))
-         || (modeCtrl.levelSetFlags & LVLSET_FLAG_EXTRA))
+        if ((modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE && (lbl_8027CE24[0].unk4 & 8))
+         || (modeCtrl.courseFlags & COURSE_FLAG_EXTRA))
         {
             sprite->mulR = 255;
             sprite->mulG = 255;
@@ -1369,14 +1364,14 @@ void hud_show_stage_name_banner(void)
         sprite->mainFunc = floor_intro_sprite_main;
         sprite->drawFunc = floor_intro_sprite_draw;
 
-        floorNum = (modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE) ? lbl_8027CE24.unk0 : infoWork.unk20;
+        floorNum = (modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE) ? lbl_8027CE24[0].unk0 : infoWork.currFloor;
         if (modeCtrl.gameType == GAMETYPE_MAIN_COMPETITION)
             sprintf(sprite->text, "ROUND %d", floorNum);
-        else if ((modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE && (lbl_8027CE24.unk4 & 0x10))
-         || (modeCtrl.levelSetFlags & LVLSET_FLAG_MASTER))
+        else if ((modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE && (lbl_8027CE24[0].unk4 & 0x10))
+         || (modeCtrl.courseFlags & COURSE_FLAG_MASTER))
             sprintf(sprite->text, "MASTER %d", floorNum);
-        else if ((modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE && (lbl_8027CE24.unk4 & 8))
-         || (modeCtrl.levelSetFlags & LVLSET_FLAG_EXTRA))
+        else if ((modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE && (lbl_8027CE24[0].unk4 & 8))
+         || (modeCtrl.courseFlags & COURSE_FLAG_EXTRA))
             sprintf(sprite->text, "EXTRA %d", floorNum);
         else
             sprintf(sprite->text, "FLOOR %d", floorNum);
@@ -1433,7 +1428,7 @@ static void floor_intro_sprite_main(s8 *arg0, struct Sprite *sprite)
     else
         sprite->opacity = 1.0f;
     sprite->counter++;
-    if (u_unkInputArr1[0] & PAD_BUTTON_A)
+    if (g_currPlayerButtons[0] & PAD_BUTTON_A)
         sprite->counter++;
     if (sprite->userVar != 0)
     {
@@ -1536,7 +1531,7 @@ void hud_show_ready_banner(int duration)
 {
     struct Sprite *sprite;
 
-    if (modeCtrl.gameType == 0 && modeCtrl.playerCount > 1)
+    if (modeCtrl.gameType == GAMETYPE_MAIN_NORMAL && modeCtrl.playerCount > 1)
     {
         sprite = create_sprite();
         if (sprite != NULL)
@@ -1632,19 +1627,19 @@ void hud_show_normal_mode_info(void)
 
     ball = currentBallStructPtr;
     if (modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE)
-        flags = lbl_8027CE24.unk4;
+        flags = lbl_8027CE24[0].unk4;
     else
-        flags = modeCtrl.levelSetFlags;
+        flags = modeCtrl.courseFlags;
 
     sprite = create_sprite();
     if (sprite != NULL)
     {
-        sprite->x = (modeCtrl.levelSetFlags & 1) ? 72 : 32;
-        sprite->y = (modeCtrl.levelSetFlags & 1) ? 436 : 458;
+        sprite->x = (modeCtrl.courseFlags & 1) ? 72 : 32;
+        sprite->y = (modeCtrl.courseFlags & 1) ? 436 : 458;
         sprite->fontId = FONT_ASC_20x20;
-        if (flags & LVLSET_FLAG_MASTER)
+        if (flags & COURSE_FLAG_MASTER)
             sprite->x = 32.0f;
-        if (flags & LVLSET_FLAG_EXTRA)
+        if (flags & COURSE_FLAG_EXTRA)
         {
             sprite->mulR = 255;
             sprite->mulG = 255;
@@ -1656,7 +1651,7 @@ void hud_show_normal_mode_info(void)
         sprite->textAlign = ALIGN_LB;
         sprite->mainFunc = lbl_8007A774;
 
-        floorNum = (modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE) ? lbl_8027CE24.unk0 : infoWork.unk20;
+        floorNum = (modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE) ? lbl_8027CE24[0].unk0 : infoWork.currFloor;
         if (flags & 0x10)
             sprintf(sprite->text, "MASTER %d", floorNum);
         else if (flags & 8)
@@ -1677,7 +1672,7 @@ void hud_show_normal_mode_info(void)
         }
     }
 
-    if ((modeCtrl.levelSetFlags & 1) && !(flags & LVLSET_FLAG_MASTER))
+    if ((modeCtrl.courseFlags & 1) && !(flags & COURSE_FLAG_MASTER))
     {
         sprite = create_sprite();
         if (sprite != NULL)
@@ -1689,9 +1684,9 @@ void hud_show_normal_mode_info(void)
             sprite->scaleX = 0.5f;
             sprite->scaleY = 0.5f;
             if (modeCtrl.gameType == GAMETYPE_MAIN_PRACTICE)
-                sprintf(sprite->text, "%d", lbl_8027CE24.unk2 + 4);
+                sprintf(sprite->text, "%d", lbl_8027CE24[0].unk2 + 4);
             else
-                sprintf(sprite->text, "%d", modeCtrl.levelSet + 4);
+                sprintf(sprite->text, "%d", modeCtrl.difficulty + 4);
         }
         sprite = create_sprite();
         if (sprite != NULL)
@@ -1873,7 +1868,7 @@ void hud_show_normal_mode_info(void)
     if (sprite != NULL)
     {
         sprite->x = (modeCtrl.playerCount > 1) ? 74 : 32;
-        sprite->y = (modeCtrl.levelSetFlags & 1) ? 420 : 428;
+        sprite->y = (modeCtrl.courseFlags & 1) ? 420 : 428;
         sprite->fontId = FONT_ASC_20x20;
         sprite->textAlign = ALIGN_LB;
         sprite->unk4C = 0.2f;
@@ -2077,12 +2072,12 @@ void hud_show_competition_mode_info(void)
     int i;
     s8 *phi_r28;
 
-    if (lbl_802F1FB0 != infoWork.unk20)
+    if (lbl_802F1FB0 != infoWork.currFloor)
     {
         sprite = create_sprite();
         if (sprite != NULL)
         {
-            sprintf(sprite->text, "ROUND %d", infoWork.unk20);
+            sprintf(sprite->text, "ROUND %d", infoWork.currFloor);
             sprite->x = -20.0f * strlen(sprite->text);
             sprite->y = 250.0f;
             sprite->fontId = FONT_ASC_20x20;
@@ -2149,8 +2144,8 @@ void hud_show_competition_mode_info(void)
         }
     }
 
-    phi_r28 = spritePoolInfo.unkC;
-    for (i = 0; i < spritePoolInfo.unk8; i++, phi_r28++)
+    phi_r28 = g_poolInfo.playerPool.statusList;
+    for (i = 0; i < g_poolInfo.playerPool.count; i++, phi_r28++)
     {
         if (*phi_r28 != 0)
             show_competition_player_hud(i);
@@ -2260,7 +2255,7 @@ static void competition_separator_sprite_draw(struct Sprite *sprite)
 
 static void lbl_8007A774(s8 *arg0, struct Sprite *sprite)
 {
-    if (modeCtrl.levelSetFlags & 1)
+    if (modeCtrl.courseFlags & 1)
     {
         if (gamePauseStatus & 4)
             sprite->y = 436.0f;
@@ -2626,13 +2621,13 @@ static void bonus_floor_sprite_main(s8 *arg0, struct Sprite *sprite)
 
 static void final_floor_sprite_main(s8 *arg0, struct Sprite *sprite)
 {
-    if (modeCtrl.levelSet == 0)
+    if (modeCtrl.difficulty == 0)
     {
         sprite->mulR = 0;
         sprite->mulG = 208;
         sprite->mulB = 0;
     }
-    else if (modeCtrl.levelSet == 1)
+    else if (modeCtrl.difficulty == 1)
     {
         sprite->mulR = 0;
         sprite->mulG = 0;
@@ -2942,7 +2937,7 @@ void hud_show_goal_banner(int duration)
             sprite->userVar = duration;
             sprite->flags |= 0x1000;
             sprite->mainFunc = warp_sprite_main;
-            sprintf(sprite->text, "JUMP TO FLOOR %d", infoWork.unk20);
+            sprintf(sprite->text, "JUMP TO FLOOR %d", infoWork.currFloor);
         }
     }
 }
@@ -2999,7 +2994,7 @@ static void goal_sprite_draw(struct Sprite *sprite)
     {
         temp_r6 = t - 180;
         sprite->x = 320.0 + temp_r6 * 8.03333;
-        if (modeCtrl.gameType == 1)
+        if (modeCtrl.gameType == GAMETYPE_MAIN_COMPETITION)
             sprite->y = 240.0 + temp_r6 * 6.0;
         else
             sprite->y = 320.0 + temp_r6 * 3.33333;
@@ -3084,7 +3079,7 @@ static void warp_sprite_main(s8 *arg0, struct Sprite *sprite)
             warpSprite->opacity = 0.5f;
             warpSprite->flags |= 0x1000;
             warpSprite->mainFunc = lbl_8007CDCC;
-            sprintf(warpSprite->text, "JUMP TO FLOOR %d", infoWork.unk20);
+            sprintf(warpSprite->text, "JUMP TO FLOOR %d", infoWork.currFloor);
         }
     }
 
@@ -3335,7 +3330,7 @@ void hud_show_continue_interface(void)
         sprite->mainFunc = continue_sprite_main;
         strcpy(sprite->text, "CONTINUE?");
     }
-    if (func_800676C0() == 0)
+    if (are_all_continues_unlocked() == 0)
     {
         sprite = create_sprite();
         if (sprite != NULL)
@@ -3408,7 +3403,7 @@ static void continue_sprite_main(s8 *arg0, struct Sprite *sprite)
 {
     if (modeCtrl.gameType == GAMETYPE_MAIN_NORMAL
      && modeCtrl.playerCount == 1
-     && func_80066868() == 0)
+     && !is_play_points_textbox_done())
     {
         sprite->opacity += 0.1 * -sprite->opacity;
         return;
@@ -3425,11 +3420,11 @@ static void num_continues_sprite_main(s8 *arg0, struct Sprite *sprite)
 {
     if (modeCtrl.gameType == GAMETYPE_MAIN_NORMAL
      && modeCtrl.playerCount == 1
-     && func_80066868() == 0)
+     && !is_play_points_textbox_done())
         sprite->opacity += 0.1 * -sprite->opacity;
     else
         sprite->opacity += 0.1 * (1.0 - sprite->opacity);
-    sprintf(sprite->text, "a/Continue(s):%d", get_num_continues());
+    sprintf(sprite->text, "a/Continue(s):%d", get_available_continues());
 }
 
 static void continue_yes_no_sprite_main(s8 *arg0, struct Sprite *sprite)
@@ -3447,7 +3442,7 @@ static void continue_yes_no_sprite_main(s8 *arg0, struct Sprite *sprite)
         sprite->mulB = 190;
     }
 
-    if (modeCtrl.levelSetFlags & 4)
+    if (modeCtrl.courseFlags & 4)
     {
         sprite->opacity += 0.1 * (1.0 - sprite->opacity);
         if (sprite->userVar == modeCtrl.unk10)
@@ -3494,7 +3489,7 @@ static void continue_yes_no_sprite_main(s8 *arg0, struct Sprite *sprite)
 
     if (modeCtrl.gameType == GAMETYPE_MAIN_NORMAL
      && modeCtrl.playerCount == 1
-     && func_80066868() == 0)
+     && !is_play_points_textbox_done())
     {
         sprite->opacity += 0.1 * -sprite->opacity;
         return;
@@ -3708,8 +3703,8 @@ static void hurry_up_sprite_main(s8 *arg0, struct Sprite *sprite)
     sprite->opacity = (sprite->counter & 1) ? 1.0 : 0.0;
     if (sprite->userVar == 0)
     {
-        sprite->x += 4.0 * ((rand() / 32767.0f) - 0.5);
-        sprite->y += 2.0 * ((rand() / 32767.0f) - 0.5);
+        sprite->x += 4.0 * (RAND_FLOAT() - 0.5);
+        sprite->y += 2.0 * (RAND_FLOAT() - 0.5);
         return;
     }
     sprite->x = find_sprite_with_tag(20)->x + sprite->userVar;
@@ -3742,7 +3737,7 @@ void show_replay_text(int arg0)
 static void replay_sprite_main(s8 *arg0, struct Sprite *sprite)
 {
     sprite->counter--;
-    if (sprite->counter < 0 || !(infoWork.flags & INFO_FLAG_04))
+    if (sprite->counter < 0 || !(infoWork.flags & INFO_FLAG_REPLAY))
     {
         sprite->x += 8.0f;
         if (sprite->x > 760.0f)
@@ -3812,7 +3807,7 @@ void hud_show_name_entry_info(int rank, int unused)
         sprite->scaleY = 0.5f;
         sprite->userVar = 2;
         sprite->mainFunc = name_entry_info_sprite_main;
-        sprintf(sprite->text, "%d", modeCtrl.levelSet + 4);
+        sprintf(sprite->text, "%d", modeCtrl.difficulty + 4);
     }
     sprite = create_sprite();
     if (sprite != NULL)
@@ -4036,7 +4031,7 @@ void func_8007EB2C(int arg0)
         sprite->unk4C = 0.1 - 0.001 * sprite->scaleX;
         sprite->flags |= 0x1000;
         sprite->mainFunc = lbl_8007EC80;
-        if (modeCtrl.levelSetFlags & LVLSET_FLAG_MASTER)
+        if (modeCtrl.courseFlags & COURSE_FLAG_MASTER)
             sprintf(sprite->text, "MASTER STAGE");
         else
             sprintf(sprite->text, "EXTRA STAGE");
@@ -4158,7 +4153,7 @@ static void lbl_8007F060(s8 *arg0, struct Sprite *sprite)
     {
         if (sprite->counter == 0)
         {
-            if (rand() / 32767.0f < 0.03)
+            if (RAND_FLOAT() < 0.03)
                 sprite->counter = 15;
         }
         else

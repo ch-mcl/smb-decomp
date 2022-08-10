@@ -9,6 +9,8 @@
 #include "info.h"
 #include "input.h"
 #include "mode.h"
+#include "pool.h"
+#include "recplay.h"
 #include "sprite.h"
 
 struct PauseMenuState pauseMenuState;
@@ -102,12 +104,12 @@ int should_open_pause_menu(void)
          && !(analogButtonInfo[0][0] & PAD_BUTTON_B)
          && lbl_802F1ED8 == 0
          && !(gamePauseStatus & 8)
-         && (u_unkInputArr1[2] & PAD_BUTTON_START))
+         && (g_currPlayerButtons[2] & PAD_BUTTON_START))
             return TRUE;
     }
     else
     {
-        if (!(gamePauseStatus & 8) && (u_unkInputArr1[2] & PAD_BUTTON_START))
+        if (!(gamePauseStatus & 8) && (g_currPlayerButtons[2] & PAD_BUTTON_START))
             return TRUE;
     }
     return FALSE;
@@ -364,7 +366,7 @@ void u_activate_pause_menu_item(struct Sprite *menuSprite)
             u_play_music(100, 10);
             break;
         case 1:  // "Retry"
-            infoWork.unk1E++;
+            infoWork.attempts++;
             BALL_FOREACH( ball->flags |= BALL_FLAG_23; )
             gameSubmodeRequest = SMD_GAME_READY_INIT;
             u_play_music(100, 10);
@@ -390,7 +392,7 @@ void u_activate_pause_menu_item(struct Sprite *menuSprite)
             u_pause_menu_load_how_to_play(menuSprite);
             break;
         case 4:  // "Stage select"
-            modeCtrl.levelSetFlags |= 0x8000;
+            modeCtrl.courseFlags |= 0x8000;
             lbl_802F1B98 = 1;
             func_80012434(-1);
             break;
@@ -410,7 +412,7 @@ void u_activate_pause_menu_item(struct Sprite *menuSprite)
             break;
         case 1:  // "Retry"
             destroy_sprite_with_tag(4);
-            modeCtrl.levelSetFlags |= 0x4000;
+            modeCtrl.courseFlags |= 0x4000;
             u_play_music(100, 10);
             break;
         case 2:  // "How to play"

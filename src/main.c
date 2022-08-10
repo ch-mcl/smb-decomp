@@ -6,19 +6,23 @@
 #include "ball.h"
 #include "bitmap.h"
 #include "camera.h"
+#include "course.h"
 #include "event.h"
 #include "input.h"
 #include "load.h"
 #include "mode.h"
+#include "mot_ape.h"
 #include "nl2ngc.h"
 #include "ord_tbl.h"
 #include "perf.h"
+#include "pool.h"
+#include "recplay.h"
 #include "stage.h"
 #include "world.h"
 
 struct Struct8008CF00 lbl_801ED920[146];
 
-struct NaomiModel *lbl_802F1B4C;
+struct NlModel *lbl_802F1B4C;
 void *dvdReadBuffer;
 void *lbl_802F1B44;
 void *lbl_802F1B40;
@@ -39,20 +43,25 @@ long stageHeapSize;
 long backgroundHeapSize;
 long charaHeapSize;
 
-struct NaomiObj *naomiCommonObj;
-struct NaomiObj *naomiStageObj;
-struct NaomiObj *naomiBackgroundObj;
-struct NaomiObj *lbl_802F1AF8;
-struct NaomiObj *minigameNaomiObj;
+struct NlObj *g_commonNlObj;
+struct NlObj *g_stageNlObj;
+struct NlObj *g_bgNlObj;
+struct NlObj *lbl_802F1AF8;
+struct NlObj *g_minigameNlObj;
 
-struct TPL *naomiCommonTpl;
-struct TPL *naomiStageTpl;
-struct TPL *naomiBackgroundTpl;
+struct TPL *g_commonNlTpl;
+struct TPL *g_stageNlTpl;
+struct TPL *g_bgNlTpl;
 struct TPL *lbl_802F1AE4;
-struct TPL *minigameNaomiTpl;
+struct TPL *g_minigameNlTpl;
 
+#ifdef __GNUC__
+void __eabi(void) {}
+__attribute__((section(".text")))
+#endif
 void main(void)
 {
+    //dipSwitches |= 1;
     globalFrameCounter = 0;
     initialize();
     gm_init();
@@ -66,7 +75,7 @@ void main(void)
     currentWorldStructPtr = &worldInfo[0];
     chkstatus_init();
     func_8008CF00(lbl_801ED920, 0x80);
-    func_800487B4();
+    recplay_init();
     camera_init();
     polydisp_init();
     ord_tbl_init_buffer(lbl_802F1B44, 0x10000);
@@ -81,7 +90,7 @@ void main(void)
     loadingStageIdRequest = 1;
     lbl_802F1F40 = 1;
     u_reset_gamedata();
-    func_80065C58();
+    course_init();
     globalFrameCounter++;
     srand(OSGetTime());
 

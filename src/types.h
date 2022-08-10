@@ -110,48 +110,48 @@ struct StageBgAnim
     struct Keyframe *scaleYKeyframes;
     u32 scaleZKeyframeCount;
     struct Keyframe *scaleZKeyframes;
-    u32 rotXKeyframes;
-    struct Keyframe *rotXKeyframeCount;
-    u32 rotYKeyframes;
-    struct Keyframe *rotYKeyframeCount;
-    u32 rotZKeyframes;
-    struct Keyframe *rotZKeyframeCount;
-    u32 posXKeyframes;
-    struct Keyframe *posXKeyframeCount;
-    u32 posYKeyframes;
-    struct Keyframe *posYKeyframeCount;
-    u32 posZKeyframes;
-    struct Keyframe *posZKeyframeCount;
+    u32 rotXKeyframeCount;
+    struct Keyframe *rotXKeyframes;
+    u32 rotYKeyframeCount;
+    struct Keyframe *rotYKeyframes;
+    u32 rotZKeyframeCount;
+    struct Keyframe *rotZKeyframes;
+    u32 posXKeyframeCount;
+    struct Keyframe *posXKeyframes;
+    u32 posYKeyframeCount;
+    struct Keyframe *posYKeyframes;
+    u32 posZKeyframeCount;
+    struct Keyframe *posZKeyframes;
     u32 visibleKeyframeCount;
     struct Keyframe *visibleKeyframes;  // Model visible if value >= 0.5?
     u32 translucencyKeyframeCount;
     struct Keyframe *translucencyKeyframes;
 };
 
-struct UnkStruct8005562C_child2_child
+struct NightWindowAnim
 {
-    Vec unk0;
-    s16 unkC;
-    s16 unkE;
-    s16 unk10;
-    s8 unk12;
+    Point3d pos;
+    s16 rotX;
+    s16 rotY;
+    s16 rotZ;
+    s8 id; // Which list of flipbook models to animate
 };
 
-struct UnkStruct8005562C_child2_child2
+struct StormFireAnim
 {
-    Vec unk0;
-    s8 unkC;
+    Point3d pos;
+    s8 frameOffset;
 };
 
-struct UnkStruct8005562C_child2
+struct StageFlipbookAnims
 {
-    s32 unk0;
-    struct UnkStruct8005562C_child2_child *unk4;
-    s32 unk8;
-    struct UnkStruct8005562C_child2_child2 *unkC;
+    s32 nightWindowAnimCount;
+    struct NightWindowAnim *nightWindowAnims;
+    s32 stormFireAnimCount;
+    struct StormFireAnim *stormFireAnims;
 };
 
-struct StageBgModel;
+struct StageBgObject;
 struct Camera;
 struct Sprite;
 struct FontParams;
@@ -178,33 +178,33 @@ struct Struct802B39C0_B0_child
     s32 unk8;
     struct Struct80089CBC *unkC;
     float unk10;
-    s32 unk14[3];
-    s32 unk20;
+    s32 unk14[4];
 };  // size = 0x24
 
-struct MotionTransform
+// Represents a joint's channel (x, y, z, rotX, rotY, rotZ) whose value changes during the animation
+struct MotionChannel
 {
-    u8 unk0;
-    u8 unk1;
-    u16 *unk4;  // delta times?
-    u8 *numComponents;  // list of value counts
+    u8 keyframeCount;
+    u8 currKeyframe;
+    u16 *times;
+    u8 *valueCounts;
     float *values;
 };  // size = 0x10
 
-struct JointBoneThing  // Joint object?
+struct AnimJoint
 {
     u32 flags;
     Vec unk4;
     Vec unk10;
     Mtx unk1C;
-    u32 unk4C;
-    const u8 *unk50;
-    /*0x54*/ struct MotionTransform transforms[6];  // x, y, z, rotX, rotY, rotZ
+    /*0x4C*/ u32 childCount;
+    /*0x50*/ const u8 *childIndexes;  // indexes of joints that are attached to this one
+    /*0x54*/ struct MotionChannel channels[6];  // x, y, z, rotX, rotY, rotZ
     u8 fillerB4[0x168-0xB4];
     Mtx unk168;
     float unk198;
     float unk19C;
-    s32 unk1A0;
+    /*0x1A0*/ s32 parentIdx;  // index of this joint's parent, or -1 if this is the root
     Vec unk1A4;
     Quaternion unk1B0;
     Point3d unk1C0;
@@ -231,8 +231,8 @@ struct Struct8003699C_child_sub
     u16 unk2A;
     float unk2C;
     u8 filler30[4];
-    struct JointBoneThing *unk34;
-    struct JointBoneThing unk38[29];
+    struct AnimJoint *unk34;
+    struct AnimJoint unk38[29];
 };  // size = 0x4090
 
 struct Struct8003699C_child_child
@@ -264,7 +264,7 @@ struct Struct8003699C_child
     struct Struct8003699C_child_sub unk84;
     struct Struct8003699C_child_sub unk4114;
     const struct Struct8003699C_child_child *unk81A4;
-    struct JointBoneThing unk81A8[29];
+    /*0x81A8*/ struct AnimJoint joints[29];
 };
 
 struct MotRotation
@@ -272,12 +272,6 @@ struct MotRotation
     float rotX;
     float rotY;
     float rotZ;
-};
-
-struct Struct80116F18
-{
-    u32 length;
-    const u8 *unk4;
 };
 
 struct Ape_child
@@ -320,6 +314,7 @@ struct Ape
     u32 unk94;
     struct Struct802B39C0_B0_child *unk98;
     u32 unk9C;
+    // Sometimes treated as a Vec, sometimes treated as a Quaternion
     Vec unkA0;
     float unkAC;
     u32 unkB0;
@@ -331,23 +326,6 @@ struct Ape
     s16 unkC2;
 };  // size = 0xC4
 
-struct SpritePoolInfo
-{
-             u8 filler0[8];
-             s32 unk8;
-             s8 *unkC;
-             u8 unk10[0x18-0x10];
-             s32 unk18;
-             s8 *unk1C;
-             u8 unk20[8];
-             s32 unk28;
-             s8 *unk2C;
-             u8 unk30[4];
-             u32 unk34;
-             s32 unk38;
-    /*0x3C*/ s8 *statusList;
-};
-
 struct Struct80176434
 {
     s32 unk0;
@@ -358,24 +336,12 @@ struct Struct80176434
 
 struct AnimGroupInfo
 {
-    Point3d pos;
-    Point3d prevPos;
-    S16Vec rot;
-    S16Vec prevRot;
-    Mtx transform;     // Transform from anim group space to world space
-    Mtx prevTransform; // Previous frame transform from animGroup space to world space
-};
-
-struct ReplayInfo
-{
-    u16 flags;  // (1 << 5) = expert, (1 << 6) = master
-    u8 stageId;
-    u8 difficulty;  // 0 = beginner, 1 = advanced, 2 = expert
-    u8 floorNum;
-    u8 unk5;
-    u8 filler6[0x10-6];
-    u32 unk10;
-    u8 filler14[4];
+    /*0x00*/ Point3d pos;
+    /*0x0C*/ Point3d prevPos;
+    /*0x18*/ S16Vec rot;
+    /*0x1E*/ S16Vec prevRot;
+    /*0x24*/ Mtx transform;     // Transform from anim group space to world space
+    /*0x54*/ Mtx prevTransform; // Previous frame transform from animGroup space to world space
 };
 
 struct RaycastHit
@@ -389,8 +355,8 @@ typedef u32 (*Func802F20F0)();
 typedef void (*CameraCallback)(struct Camera *, struct Ball *);
 typedef void (*BallCallback)(struct Ball *);
 
-struct NaomiModel;
-struct NaomiObj;
+struct NlModel;
+struct NlObj;
 
 struct Struct80092B98
 {
@@ -486,19 +452,6 @@ struct ColiEdge
     Vec2d normal;
 };
 
-struct Struct800496BC
-{
-    Vec unk0;
-    s16 unkC;
-    s16 unkE;
-    s16 unk10;
-    s16 unk12;
-    s16 unk14;
-    s16 unk16;
-    u32 unk18;
-    float unk1C;
-};  // size = 0x20
-
 typedef void (*Struct80206DEC_Func)(void);
 
 struct Struct80206DEC
@@ -514,7 +467,7 @@ struct Struct80206DEC
 
 struct Stage;
 
-struct Struct8003C550
+struct Effect
 {
     u8 filler0[8];
     s16 unk8;
@@ -532,13 +485,14 @@ struct Struct8003C550
     s16 unk4C;
     s16 unk4E;
     s16 unk50;
-    u8 filler52[2];
+    s16 unk52;
     s16 unk54;
-    u8 filler56[0x70-0x56];
+    s16 unk56;
+    u8 filler58[0x70-0x58];
     Vec unk70;
     Vec unk7C;
     Vec unk88;
-    u8 filler94[0xA0-0x94];
+    Vec unk94;
     s16 unkA0;
     s16 unkA2;
     s16 unkA4;
@@ -547,33 +501,34 @@ struct Struct8003C550
 
 // motload
 
-struct MotDat_child
+struct MotDatJoint
 {
-    u8 unk0;
-};
-
-struct MotDat_child2
-{
-    u8 unk0;
-    u16 unk2;
+    u8 jointIdx;
+    u16 chanFlags;  // specifies which channels are present in the animation
 };  // size = 0x4
 
+// struct containing all transformation values for all joints in an animation
 struct MotDat
 {
     u16 unk0;
-    u8 filler2[2];
-    struct MotDat_child2 *unk4;  // could be u8*?
-    struct MotDat_child *unk8;
-    u16 *unkC;  // could be u16*?
-    u8 *unk10;
-    float *unk14;
+    struct MotDatJoint *jointInfo; // ptr to array of structs
+    u8 *keyframeCounts;  // number of keyframes per channel
+    u16 *times;  // times for each keyframe
+    u8 *valueCounts;  // number of values for each keyframe
+    float *values;
 };  // size = 0x18
+
+struct ChildJointList
+{
+    u32 count;
+    const u8 *children;
+};
 
 struct MotSkeletonEntry1
 {
     void *unk0;
-    struct Struct80116F18 *unk4;
-    struct MotRotation *rotations;
+    /*0x04*/ struct ChildJointList *childLists;
+    /*0x08*/ struct MotRotation *rotations;
     Vec *unkC;
     Vec *unk10;
     /*0x14*/ char *name;  // skeleton name?
@@ -648,7 +603,7 @@ struct Struct8020A348
 
 struct StageSelection
 {
-    s32 levelSet;
+    s32 difficulty;
     s32 levelNum;
 };
 
@@ -685,18 +640,18 @@ struct NaomiSpriteParams
     u8 filler40[0x50-0x40];
 };
 
-struct NaomiVtxWithNormal;
-struct NaomiVtxWithColor;
+struct NlVtxTypeB;
+struct NlVtxTypeA;
 
 // Part of the stage whose vertices are manipulated by functions
 struct DynamicStagePart
 {
     void *modelName;
-    struct NaomiModel *origModel;  // original model
-    void (*posNrmTexFunc)(struct NaomiVtxWithNormal *);
-    void (*posColorTexFunc)(struct NaomiVtxWithColor *);
+    struct NlModel *origModel;  // original model
+    void (*posNrmTexFunc)(struct NlVtxTypeB *);
+    void (*posColorTexFunc)(struct NlVtxTypeA *);
     u32 (*raycastDownFunc)(Point3d *rayOrigin, Point3d *outHitPos, Vec *outHitNormal);
-    struct NaomiModel *tempModel;  // modified copy of the model
+    struct NlModel *tempModel;  // modified copy of the model
 };
 
 struct Struct801EEC80
@@ -776,14 +731,7 @@ struct Sphere
 };
 
 struct Preview;
-struct NaomiDispList;
-
-struct Struct8009544C
-{
-    u8 filler0[0x6];
-    u16 unk6;
-    u8 filler8[0x18-0x8];
-};  // size = 0x18
+struct NlDispList;
 
 struct Struct801EED88
 {
@@ -834,7 +782,10 @@ struct MemcardGameData_sub
     /*0x58CC*/ s16 unk88;
     /*0x58CE*/ s16 unk8A;
     /*0x58D0*/ u32 unk8C;
-    /*0x58D4*/ u8 filler90[0xA0-0x90];
+    /*0x58D4*/ u32 unk90;
+    /*0x58D8*/ u32 unk94;
+    /*0x58DC*/ u32 unk98;
+    /*0x58E0*/ u32 unk9C;
     /*0x58E4*/ u32 unkA0;
     /*0x58E8*/ u8 unkA4[6];
     /*0x58EE*/ u8 unkAA;
@@ -858,7 +809,9 @@ struct MemcardGameData_sub
     /*0x5B01*/ u8 unk2BD;
     /*0x5B02*/ u8 filler2BE[1];
     /*0x5B03*/ u8 unk2BF;
-    /*0x5B04*/ u8 filler2C0[0x3BC-0x2C0];
+    /*0x5B04*/ u32 unk2C0;
+    /*0x5B08*/ u32 unk2C4;
+    /*0x5B0C*/ u8 filler2C8[0x3BC-0x2C8];
     /*0x5C00*/ u32 unk3BC;
 };  // size = 0x3C0
 
@@ -901,10 +854,10 @@ struct Struct802C67D4
 
 struct ApeFacePart
 {
-    s16 unk0;
-    s16 unk2;
+    s16 modelId;
+    s16 jointIdx;
     Vec unk4;
-    void (*unk10)();
+    void (*draw)(struct Ape *, struct ApeFacePart *, struct Struct802B39C0_B0_child *);
     char *name;
     u8 filler18[0x20-0x18];
 };
@@ -932,7 +885,7 @@ struct Struct80061BC4_sub
     u8 filler20[0x2C-0x24];
 };
 
-struct Struct80061BC4
+struct EnvMapSomething
 {
     s32 unk0;
     u8 filler4[0xC-0x4];
@@ -940,7 +893,7 @@ struct Struct80061BC4
     u32 unk2C;
 };
 
-typedef void (*BallEnvFunc)(struct Struct80061BC4 *);
+typedef void (*BallEnvFunc)(struct EnvMapSomething *);
 
 struct BgLightInfo
 {
@@ -1031,5 +984,30 @@ struct Struct8008CF00
 };
 
 struct Stobj;
+
+struct Struct80089A04
+{
+    char *unk0;
+    char *names[4];
+    u32 unk14;
+    u32 filler18[6];
+    s32 unk30[4];
+};
+
+struct ScoreRecord
+{
+    char initials[4];
+    u32 score;
+    u8 filler8[4];
+    u8 floorNum;
+    s8 unkD;  // 0 = normal, 1 = extra, 2 = master
+};
+
+struct Struct80250A68
+{
+    s32 unk0[4];
+    float unk10;
+    s32 unk14;
+};
 
 #endif

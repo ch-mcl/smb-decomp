@@ -21,6 +21,11 @@
 #include "load.h"
 #include "mathutil.h"
 #include "mode.h"
+#include "mot_ape.h"
+#include "pool.h"
+#include "ranking_screen.h"
+#include "recplay.h"
+#include "rend_efc.h"
 #include "sprite.h"
 #include "stage.h"
 #include "textbox.h"
@@ -109,7 +114,7 @@ void submode_adv_logo_init_func(void)
     func_80011D90();
     introBackdropColor = RGBA(255, 255, 255, 0);
     modeCtrl.submodeTimer = 840;
-    modeCtrl.levelSetFlags = 0;
+    modeCtrl.courseFlags = 0;
     advLogoInfo.timer = modeCtrl.submodeTimer;
     advLogoInfo.rollTimer = 0;
     prevLogoPos.x = 0.0f;
@@ -234,7 +239,7 @@ void submode_adv_logo_main_func(void)
     update_av_logo();
 
     if ((dipSwitches & DIP_DEBUG)
-     && !(modeCtrl.levelSetFlags & (1 << 13))
+     && !(modeCtrl.courseFlags & (1 << 13))
      && modeCtrl.submodeTimer > 60
      && lbl_802F1BA8 == 0
      && ANY_CONTROLLER_PRESSED(PAD_BUTTON_START))
@@ -243,7 +248,7 @@ void submode_adv_logo_main_func(void)
         u_play_music(2, 0);
     }
 
-    if (modeCtrl.levelSetFlags & (1 << 13))
+    if (modeCtrl.courseFlags & (1 << 13))
         return;
 
     if (modeCtrl.submodeTimer > 30 && modeCtrl.submodeTimer < 690
@@ -277,7 +282,7 @@ void submode_adv_demo_init_func(void)
     func_80011D90();
     introBackdropColor = RGBA(255, 255, 255, 0);
     modeCtrl.submodeTimer = 2902;
-    modeCtrl.levelSetFlags = 0;
+    modeCtrl.courseFlags = 0;
     lbl_802F1BB0 = 0;
     advDemoInfo.unk8 = 0;
     advDemoInfo.flags = 0x108;
@@ -287,7 +292,7 @@ void submode_adv_demo_init_func(void)
     event_finish_all();
     free_all_bitmap_groups_except_com();
     for (i = 0; i < 4; i++)
-        spritePoolInfo.unkC[i] = 2;
+        g_poolInfo.playerPool.statusList[i] = 2;
     modeCtrl.playerCount = 1;
     modeCtrl.unk30 = 1;
     modeCtrl.gameType = GAMETYPE_MAIN_NORMAL;
@@ -314,7 +319,7 @@ void submode_adv_demo_init_func(void)
     event_start(EVENT_BACKGROUND);
     event_start(EVENT_SOUND);
     light_init(currStageId);
-    func_800972CC();
+    rend_efc_mirror_enable();
     for (i = 0; i < 4; i++)
     {
         ballInfo[i].state = 21;
@@ -523,7 +528,7 @@ void run_cutscene_script(void)
         switch (cmd->cmdId)
         {
         case CMD_BANANA_BOX:
-            if (!(modeCtrl.levelSetFlags & (1 << 13)))
+            if (!(modeCtrl.courseFlags & (1 << 13)))
             {
                 mathutil_mtxA_from_mtxB();
                 u_math_unk15(&ballInfo[cmd->param].ape->unk30, &sp3C, currentCameraStructPtr->sub28.unk38);
@@ -605,7 +610,7 @@ void run_cutscene_script(void)
             event_start(EVENT_EFFECT);
             event_start(EVENT_REND_EFC);
             event_start(EVENT_BACKGROUND);
-            func_800972CC();
+            rend_efc_mirror_enable();
             break;
         case 12:
             light_init(0);
@@ -695,7 +700,7 @@ void submode_adv_demo_main_func(void)
     run_cutscene_script();
     if (advDemoInfo.unk8 == 2602)
         func_8000FEC8(100);
-    if (!(modeCtrl.levelSetFlags & (1 << 13)) && modeCtrl.submodeTimer > 60
+    if (!(modeCtrl.courseFlags & (1 << 13)) && modeCtrl.submodeTimer > 60
      && lbl_802F1BA8 == 0
      && ANY_CONTROLLER_PRESSED(PAD_BUTTON_START))
         func_8000FEC8(30);
@@ -1203,7 +1208,7 @@ static void func_8000FEC8(int a)
     u_play_sound(0xA022);
     if (lbl_802014E0.unk0 != 2)
         u_play_music(3, 0);
-    modeCtrl.levelSetFlags |= (1 << 13);
+    modeCtrl.courseFlags |= (1 << 13);
     lbl_802F1BA8 = a;
 }
 
@@ -1218,7 +1223,7 @@ void submode_adv_title_init_func(void)
 
     modeCtrl.submodeTimer = 1200;
     modeCtrl.unk10 = 0;
-    modeCtrl.levelSetFlags &= ~(1 << 2);
+    modeCtrl.courseFlags &= ~(1 << 2);
     lbl_802F1BA8 = 0;
     advDemoInfo.unk8 = 0xB56;
     advDemoInfo.flags = 0;
@@ -1249,7 +1254,7 @@ void submode_adv_title_reinit_func(void)
     func_80011D90();
     introBackdropColor = RGBA(255, 255, 255, 0);
     modeCtrl.submodeTimer = 1200;
-    modeCtrl.levelSetFlags = 0x2000;
+    modeCtrl.courseFlags = 0x2000;
     lbl_802F1BA8 = 0;
     func_8002FFEC();
     light_init(0);
@@ -1266,7 +1271,7 @@ void submode_adv_title_reinit_func(void)
         hud_show_press_start_textbox(2);
     else
     {
-        modeCtrl.levelSetFlags |= (1 << 2);
+        modeCtrl.courseFlags |= (1 << 2);
         memset(&tbox, 0, sizeof(tbox));
         tbox.x = 320;
         tbox.y = 386;
@@ -1275,7 +1280,7 @@ void submode_adv_title_reinit_func(void)
         tbox.style = 14;
         tbox.callback = NULL;
         textbox_set_properties(0, 1, &tbox);
-        textbox_set_text(0, " \n ");
+        textbox_add_text(0, " \n ");
         hud_show_title_menu();
     }
     load_stage(ST_150_TUTORIAL);
@@ -1304,13 +1309,13 @@ void submode_adv_title_main_func(void)
 
     if (textBoxes[0].state < 20
      && !(dipSwitches & DIP_DEBUG)
-     && !(modeCtrl.levelSetFlags & (1 << 2))
+     && !(modeCtrl.courseFlags & (1 << 2))
      && ANY_CONTROLLER_PRESSED(PAD_BUTTON_START))
     {
         struct TextBox tbox;
 
         func_8002B5C8(0x162);
-        modeCtrl.levelSetFlags |= 4;
+        modeCtrl.courseFlags |= 4;
         memset(&tbox, 0, sizeof(tbox));
         tbox.x = 320;
         tbox.y = 386;
@@ -1319,10 +1324,10 @@ void submode_adv_title_main_func(void)
         tbox.style = 14;
         tbox.callback = NULL;
         textbox_set_properties(0, 1, &tbox);
-        textbox_set_text(0, " \n ");
+        textbox_add_text(0, " \n ");
         hud_show_title_menu();
     }
-    if (modeCtrl.levelSetFlags & (1 << 2))
+    if (modeCtrl.courseFlags & (1 << 2))
     {
         for (i = 0; i < 4; i++)
         {
@@ -1368,7 +1373,7 @@ void submode_adv_info_init_func(void)
 
     func_80011D90();
     modeCtrl.submodeTimer = 4380;
-    modeCtrl.levelSetFlags &= ~0x2004;
+    modeCtrl.courseFlags &= ~0x2004;
     modeCtrl.playerCount = 1;
     playerCharacterSelection[0] = 0;
     func_8002FFEC();
@@ -1394,7 +1399,7 @@ void submode_adv_info_init_func(void)
     call_bitmap_load_group(BMP_NML);
     hud_show_press_start_textbox(0);
     hud_show_adv_copyright_info(0);
-    if (!(modeCtrl.levelSetFlags & (1 << 13)))
+    if (!(modeCtrl.courseFlags & (1 << 13)))
     {
         struct TextBox tbox;
 
@@ -1413,7 +1418,7 @@ void submode_adv_info_init_func(void)
         tbox.style = 14;
         tbox.callback = NULL;
         textbox_set_properties(2, 1, &tbox);
-        textbox_set_text(2, "c/0xff5000/    Control description!    ");
+        textbox_add_text(2, "c/0xff5000/    Control description!    ");
     }
     func_800846B0(4);
     func_800846B0(3);
@@ -1551,7 +1556,7 @@ void submode_adv_info_main_func(void)
     if (modeCtrl.submodeTimer == 583)
     {
         ballInfo[0].flags &= ~BALL_FLAG_11;
-        infoWork.flags &= ~INFO_FLAG_03;
+        infoWork.flags &= ~INFO_FLAG_TIMER_PAUSED;
     }
     if (infoWork.flags & INFO_FLAG_GOAL)
     {
@@ -1568,13 +1573,13 @@ void submode_adv_info_main_func(void)
         sp30.z = 3.8f;
         func_800390C8(5, &sp30, 1.0f);
     }
-    if (!(modeCtrl.levelSetFlags & (1 << 13)) && modeCtrl.submodeTimer == 4320)
+    if (!(modeCtrl.courseFlags & (1 << 13)) && modeCtrl.submodeTimer == 4320)
         hud_show_title_screen_monkey_sprite();
     for (cmd = infoScript; cmd->time != 0; cmd++)
     {
         if (modeCtrl.submodeTimer > cmd->time || modeCtrl.submodeTimer < cmd->time)
             continue;
-        if (cmd->cmdId >= 0 && !(modeCtrl.levelSetFlags & (1 << 13)))
+        if (cmd->cmdId >= 0 && !(modeCtrl.courseFlags & (1 << 13)))
         {
             struct TextBox tbox;
 
@@ -1586,7 +1591,7 @@ void submode_adv_info_main_func(void)
             tbox.numRows = 1;
             tbox.style = cmd->param ? TEXTBOX_STYLE_SPIKY : TEXTBOX_STYLE_CENTER_DOWN;
             textbox_set_properties(1, 21, &tbox);
-            textbox_set_text(1, infoEnglishText[cmd->cmdId]);
+            textbox_add_text(1, infoEnglishText[cmd->cmdId]);
         }
         switch (cmd->cmdId)
         {
@@ -1631,7 +1636,7 @@ void submode_adv_info_main_func(void)
             break;
         }
     }
-    if (!(modeCtrl.levelSetFlags & (1 << 13))
+    if (!(modeCtrl.courseFlags & (1 << 13))
      && modeCtrl.submodeTimer > 60
      && lbl_802F1BA8 == 0
      && ANY_CONTROLLER_PRESSED(PAD_BUTTON_START))
@@ -1664,12 +1669,12 @@ static void func_80011BD4(void);
 
 void submode_adv_game_ready_init_func(void)
 {
-    struct ReplayInfo sp8;
+    struct ReplayHeader sp8;
     int r4;
 
     if (gamePauseStatus & 0xA)
         return;
-    func_800489F8();
+    u_load_random_builtin_replay();
     func_80011BD4();
     lbl_80250A68.unk14 = 0;
     lbl_80250A68.unk0[lbl_80250A68.unk14] = func_800119C0();
@@ -1681,7 +1686,7 @@ void submode_adv_game_ready_init_func(void)
         return;
     }
     lbl_80250A68.unk10 = func_8004964C(lbl_80250A68.unk0[lbl_80250A68.unk14]);
-    u_get_replay_info(lbl_80250A68.unk0[lbl_80250A68.unk14], &sp8);
+    get_replay_header(lbl_80250A68.unk0[lbl_80250A68.unk14], &sp8);
     currStageId = sp8.stageId;
     event_finish_all();
     call_bitmap_load_group(BMP_RNK);
@@ -1693,7 +1698,7 @@ void submode_adv_game_ready_init_func(void)
     func_8002FFEC();
     event_start(EVENT_INFO);
     func_80049514(lbl_80250A68.unk0[lbl_80250A68.unk14]);
-    infoWork.flags |= INFO_FLAG_04|INFO_FLAG_11;
+    infoWork.flags |= INFO_FLAG_REPLAY|INFO_FLAG_11;
     load_stage(currStageId);
     event_start(EVENT_STAGE);
     event_start(EVENT_WORLD);
@@ -1708,12 +1713,12 @@ void submode_adv_game_ready_init_func(void)
     event_start(EVENT_EFFECT);
     event_start(EVENT_REND_EFC);
     event_start(EVENT_BACKGROUND);
-    func_800972CC();
+    rend_efc_mirror_enable();
     event_suspend(EVENT_WORLD);
     light_init(currStageId);
     func_800846B0(4);
     bitmap_load_group(BMP_NML);
-    infoWork.flags |= INFO_FLAG_03|INFO_FLAG_08;
+    infoWork.flags |= INFO_FLAG_TIMER_PAUSED|INFO_FLAG_08;
     modeCtrl.submodeTimer = 120;
     ballInfo[0].state = 2;
     ballInfo[0].bananas = 0;
@@ -1723,7 +1728,7 @@ void submode_adv_game_ready_init_func(void)
     func_80088E90();
     hud_show_press_start_textbox(0);
     hud_show_adv_copyright_info(0);
-    func_80088C28();
+    show_rank_title_logo();
     advTutorialInfo.state = 0;
     lbl_802F1BAC = 0;
     r4 = backgroundSongs[backgroundInfo.bgId];
@@ -1748,16 +1753,16 @@ void submode_adv_game_ready_main_func(void)
     }
     if (modeCtrl.submodeTimer == 24.0)
         ballInfo[0].state = 3;
-    if (!(modeCtrl.levelSetFlags & (1 << 13))
+    if (!(modeCtrl.courseFlags & (1 << 13))
      && modeCtrl.submodeTimer > 30
      && lbl_802F1BA8 == 0
      && ANY_CONTROLLER_PRESSED(PAD_BUTTON_START))
         func_8000FEC8(30);
     if (--modeCtrl.submodeTimer <= 0)
     {
-        struct ReplayInfo sp8;
+        struct ReplayHeader sp8;
 
-        u_get_replay_info(func_80011A84(), &sp8);
+        get_replay_header(func_80011A84(), &sp8);
         if (gamePauseStatus & (1 << 2))
             printf("/*-- pre_load_stage(%d) --*/\n", sp8.stageId);
         preload_stage_files(sp8.stageId);
@@ -1770,13 +1775,13 @@ void submode_adv_game_play_init_func(void)
     if (gamePauseStatus & 0xA)
         return;
     modeCtrl.submodeTimer = func_8004964C(lbl_80250A68.unk0[lbl_80250A68.unk14]) + 30.0;
-    event_resume(2);
+    event_resume(EVENT_WORLD);
     hud_show_go_banner(60);
-    infoWork.flags &= ~(INFO_FLAG_03|INFO_FLAG_08);
+    infoWork.flags &= ~(INFO_FLAG_TIMER_PAUSED|INFO_FLAG_08);
     ballInfo[0].state = 9;
     worldInfo[0].state = 9;
     camera_set_state(0);
-    infoWork.flags |= INFO_FLAG_04|INFO_FLAG_11;
+    infoWork.flags |= INFO_FLAG_REPLAY|INFO_FLAG_11;
     lbl_80250A68.unk10 = func_8004964C(lbl_80250A68.unk0[lbl_80250A68.unk14]);
     animate_anim_groups(func_80049F90(lbl_80250A68.unk10, lbl_80250A68.unk0[lbl_80250A68.unk14]));
     gameSubmodeRequest = SMD_ADV_GAME_PLAY_MAIN;
@@ -1795,7 +1800,7 @@ void submode_adv_game_play_main_func(void)
         camera_set_state(14);
         func_800846B0(1);
     }
-    if (!(modeCtrl.levelSetFlags & (1 << 13))
+    if (!(modeCtrl.courseFlags & (1 << 13))
      && modeCtrl.submodeTimer > 30
      && lbl_802F1BA8 == 0
      && ANY_CONTROLLER_PRESSED(PAD_BUTTON_START))
@@ -1826,7 +1831,7 @@ void submode_adv_ranking_main_func(void)
 {
     struct Ball *r31;
     struct Ball *r29;
-    struct Ball *r30;
+    struct Ball *ballBackup;
     s8 *r28;
     int i;
 
@@ -1840,7 +1845,7 @@ void submode_adv_ranking_main_func(void)
         destroy_sprite_with_tag(37);
         destroy_sprite_with_tag(39);
         hud_show_adv_copyright_info(1);
-        func_800886E0(0);
+        init_ranking_screen(0);
         if (find_sprite_with_tag(17) != NULL)
             find_sprite_with_tag(17)->userVar = 1;
         advTutorialInfo.state = 1;
@@ -1858,7 +1863,7 @@ void submode_adv_ranking_main_func(void)
     case 1620:
         if (lbl_802F1BA8 == 0)
         {
-            func_800886E0(1);
+            init_ranking_screen(1);
             modeCtrl.unk18 = 0xB4;
         }
         break;
@@ -1871,7 +1876,7 @@ void submode_adv_ranking_main_func(void)
     case 720:
         if (lbl_802F1BA8 == 0)
         {
-            func_800886E0(2);
+            init_ranking_screen(2);
             modeCtrl.unk18 = 0xB4;
         }
         break;
@@ -1888,9 +1893,9 @@ void submode_adv_ranking_main_func(void)
 
     if (r31->state == 4)
     {
-        struct ReplayInfo sp50;
+        struct ReplayHeader sp50;
 
-        u_get_replay_info(lbl_80250A68.unk0[lbl_80250A68.unk14], &sp50);
+        get_replay_header(lbl_80250A68.unk0[lbl_80250A68.unk14], &sp50);
         if (sp50.flags & (1 << 7))
         {
             r31->state = 5;
@@ -1898,7 +1903,7 @@ void submode_adv_ranking_main_func(void)
         }
     }
     if (r31->state == 4 || r31->state == 6)
-        infoWork.flags &= ~(INFO_FLAG_04|INFO_FLAG_11);
+        infoWork.flags &= ~(INFO_FLAG_REPLAY|INFO_FLAG_11);
     if (r31->state != 10)
         modeCtrl.unk18--;
     if (modeCtrl.unk18 < 0
@@ -1907,10 +1912,10 @@ void submode_adv_ranking_main_func(void)
     {
         if (modeCtrl.submodeTimer > 180.0)
         {
-            struct ReplayInfo sp38;
-            struct Struct8009544C sp20;
+            struct ReplayHeader sp38;
+            struct RenderEffect focusEffect;
             float f1;
-            struct ReplayInfo sp8;
+            struct ReplayHeader sp8;
 
             modeCtrl.unk18 = 0x96;
             event_finish(EVENT_STAGE);
@@ -1922,10 +1927,10 @@ void submode_adv_ranking_main_func(void)
             event_finish(EVENT_BALL);
             event_finish(EVENT_SOUND);
             lbl_80250A68.unk0[lbl_80250A68.unk14] = func_80011B98();
-            u_get_replay_info(lbl_80250A68.unk0[lbl_80250A68.unk14], &sp38);
+            get_replay_header(lbl_80250A68.unk0[lbl_80250A68.unk14], &sp38);
             currStageId = sp38.stageId;
             func_80049514(lbl_80250A68.unk0[lbl_80250A68.unk14]);
-            infoWork.flags |= INFO_FLAG_04;
+            infoWork.flags |= INFO_FLAG_REPLAY;
             load_stage(currStageId);
             event_start(EVENT_STAGE);
             event_start(EVENT_STOBJ);
@@ -1935,10 +1940,10 @@ void submode_adv_ranking_main_func(void)
             event_start(EVENT_BACKGROUND);
             event_start(EVENT_BALL);
             event_start(EVENT_SOUND);
-            func_800972CC();
-            memset(&sp20, 0, sizeof(sp20));
-            sp20.unk6 = 0xFFFF;
-            func_8009544C(2, 3, &sp20);
+            rend_efc_mirror_enable();
+            memset(&focusEffect, 0, sizeof(focusEffect));
+            focusEffect.cameraMask = 0xFFFF;
+            rend_efc_enable(2, REND_EFC_FOCUS, &focusEffect);
             light_init(currStageId);
             ballInfo[0].state = 9;
             ballInfo[0].bananas = 0;
@@ -1963,14 +1968,14 @@ void submode_adv_ranking_main_func(void)
                 f1 = (int)((float)modeCtrl.submodeTimer * 0.5);
             lbl_80250A68.unk10 = f1;
             animate_anim_groups(func_80049F90(lbl_80250A68.unk10, lbl_80250A68.unk0[lbl_80250A68.unk14]));
-            u_get_replay_info(func_80011A84(), &sp8);
+            get_replay_header(func_80011A84(), &sp8);
             if (gamePauseStatus & (1 << 2))
                 printf("/*-- pre_load_stage(%d) --*/\n", sp8.stageId);
             preload_stage_files(sp8.stageId);
         }
     }
 
-    if (!(modeCtrl.levelSetFlags & (1 << 13))
+    if (!(modeCtrl.courseFlags & (1 << 13))
      && modeCtrl.submodeTimer > 60
      && lbl_802F1BA8 == 0
      && ANY_CONTROLLER_PRESSED(PAD_BUTTON_START))
@@ -1992,10 +1997,10 @@ void submode_adv_ranking_main_func(void)
         u_play_music(modeCtrl.submodeTimer, 2);
     }
 
-    r30 = currentBallStructPtr;
-    r28 = spritePoolInfo.unkC;
+    ballBackup = currentBallStructPtr;
+    r28 = g_poolInfo.playerPool.statusList;
     r29 = &ballInfo[0];
-    for (i = 0; i < spritePoolInfo.unk8; i++, r29++, r28++)
+    for (i = 0; i < g_poolInfo.playerPool.count; i++, r29++, r28++)
     {
         if (*r28 == 2)
         {
@@ -2008,7 +2013,7 @@ void submode_adv_ranking_main_func(void)
             }
         }
     }
-    currentBallStructPtr = r30;
+    currentBallStructPtr = ballBackup;
 
     if (--modeCtrl.submodeTimer <= 0)
     {
@@ -2024,12 +2029,12 @@ void submode_adv_ranking_main_func(void)
 
 static int func_800119C0(void)
 {
-    struct ReplayInfo sp8;
+    struct ReplayHeader sp8;
     int i;
 
     for (i = lbl_802F02EC + 1; i < 7; i++)
     {
-        u_get_replay_info(i, &sp8);
+        get_replay_header(i, &sp8);
         if ((sp8.flags & (1 << 4)) && (sp8.flags & 1))
             break;
     }
@@ -2037,13 +2042,13 @@ static int func_800119C0(void)
     {
         for (i = 0; i < lbl_802F02EC; i++)
         {
-            u_get_replay_info(i, &sp8);
+            get_replay_header(i, &sp8);
             if ((sp8.flags & (1 << 4)) && (sp8.flags & 1))
                 break;
         }
     }
     lbl_802F02EC = i;
-    u_get_replay_info(lbl_802F02EC, &sp8);
+    get_replay_header(lbl_802F02EC, &sp8);
     if (sp8.stageId == 0)
         sp8.stageId = 1;  // pointless
     return lbl_802F02EC;
@@ -2051,14 +2056,14 @@ static int func_800119C0(void)
 
 static int func_80011A84(void)
 {
-    struct ReplayInfo sp8;
+    struct ReplayHeader sp8;
     int i;
 
     for (i = lbl_802F02F0 + 1; i < 7; i++)
     {
         if (i == lbl_802F02EC || func_8004964C(i) < 300.0)
             continue;
-        u_get_replay_info(i, &sp8);
+        get_replay_header(i, &sp8);
         if (sp8.flags & 0x83)
             break;
     }
@@ -2068,7 +2073,7 @@ static int func_80011A84(void)
         {
             if (i == lbl_802F02EC || func_8004964C(i) < 300.0)
                 continue;
-            u_get_replay_info(i, &sp8);
+            get_replay_header(i, &sp8);
             if (sp8.flags & 0x83)
                 break;
         }
@@ -2076,7 +2081,7 @@ static int func_80011A84(void)
             i = lbl_802F02EC;
     }
     lbl_802F02F0 = i;
-    u_get_replay_info(lbl_802F02F0, &sp8);
+    get_replay_header(lbl_802F02F0, &sp8);
     if (sp8.stageId == ST_000_DUMMY)
         sp8.stageId = ST_001_PLAIN;  // pointless
     lbl_802F1BC4 = 1;
@@ -2135,12 +2140,12 @@ void submode_adv_start_main_func(void)
         advDemoInfo.unk8 = 0xB56;
         advDemoInfo.flags = 0;
         camera_setup_singleplayer_viewport();
-        if (modeCtrl.levelSetFlags & 1)
+        if (modeCtrl.courseFlags & 1)
         {
             gameModeRequest = MD_SEL;
             gameSubmodeRequest = SMD_SEL_NGC_INIT;
         }
-        else if (modeCtrl.levelSetFlags & (1 << 18))
+        else if (modeCtrl.courseFlags & (1 << 18))
         {
             gameModeRequest = MD_OPTION;
             gameSubmodeRequest = SMD_OPTION_SELECT_INIT;
@@ -2155,10 +2160,10 @@ void submode_adv_start_main_func(void)
 
 void func_80011D90(void)
 {
-    spritePoolInfo.unkC[0] = 2;
-    spritePoolInfo.unkC[1] = 0;
-    spritePoolInfo.unkC[2] = 0;
-    spritePoolInfo.unkC[3] = 0;
+    g_poolInfo.playerPool.statusList[0] = 2;
+    g_poolInfo.playerPool.statusList[1] = 0;
+    g_poolInfo.playerPool.statusList[2] = 0;
+    g_poolInfo.playerPool.statusList[3] = 0;
     modeCtrl.playerCount = 1;
     modeCtrl.unk30 = 1;
     modeCtrl.gameType = GAMETYPE_MAIN_NORMAL;

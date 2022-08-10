@@ -5,11 +5,14 @@
 #include "background.h"
 #include "ball.h"
 #include "camera.h"
+#include "course.h"
 #include "event.h"
 #include "info.h"
 #include "item.h"
 #include "obj_collision.h"
 #include "perf.h"
+#include "recplay.h"
+#include "rend_efc.h"
 #include "sprite.h"
 #include "stage.h"
 #include "stobj.h"
@@ -64,6 +67,7 @@ void event_main(void)
         {
         case 1:
             event_start(i);
+            // fall through
         case EV_STATE_RUNNING:
             event->main();
             break;
