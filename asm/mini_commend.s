@@ -649,7 +649,7 @@ lbl_8009C304:
 /* 8009C30C 0009822C  7C 03 00 00 */	cmpw r3, r0
 /* 8009C310 00098230  40 82 00 0C */	bne lbl_8009C31C
 /* 8009C314 00098234  80 7B 00 04 */	lwz r3, 4(r27)
-/* 8009C318 00098238  4B F8 F2 8D */	bl u_play_sound
+/* 8009C318 00098238  4B F8 F2 8D */	bl u_play_sound_0
 lbl_8009C31C:
 /* 8009C31C 0009823C  3B 9C 00 01 */	addi r28, r28, 1
 /* 8009C320 00098240  3B 7B 00 08 */	addi r27, r27, 8
@@ -830,7 +830,7 @@ lbl_8009C59C:
 /* 8009C5A0 000984C0  B0 01 00 56 */	sth r0, 0x56(r1)
 lbl_8009C5A4:
 /* 8009C5A4 000984C4  38 61 00 40 */	addi r3, r1, 0x40
-/* 8009C5A8 000984C8  4B FB 09 61 */	bl u_spawn_effect_object
+/* 8009C5A8 000984C8  4B FB 09 61 */	bl spawn_effect
 /* 8009C5AC 000984CC  3B BD FF FF */	addi r29, r29, -1
 lbl_8009C5B0:
 /* 8009C5B0 000984D0  2C 1D 00 00 */	cmpwi r29, 0
@@ -1501,7 +1501,7 @@ lbl_8009CF08:
 /* 8009CF0C 00098E2C  FC 40 08 90 */	fmr f2, f1
 /* 8009CF10 00098E30  FC 60 08 90 */	fmr f3, f1
 /* 8009CF14 00098E34  FC 80 08 90 */	fmr f4, f1
-/* 8009CF18 00098E38  4B FF 27 FD */	bl avdisp_set_post_multiply_color
+/* 8009CF18 00098E38  4B FF 27 FD */	bl avdisp_set_post_mult_color
 /* 8009CF1C 00098E3C  38 60 00 01 */	li r3, 1
 /* 8009CF20 00098E40  38 80 00 03 */	li r4, 3
 /* 8009CF24 00098E44  38 A0 00 00 */	li r5, 0
@@ -1584,7 +1584,7 @@ lbl_8009D02C:
 /* 8009D040 00098F60  FC 40 08 90 */	fmr f2, f1
 /* 8009D044 00098F64  FC 60 08 90 */	fmr f3, f1
 /* 8009D048 00098F68  FC 80 08 90 */	fmr f4, f1
-/* 8009D04C 00098F6C  4B FF 26 C9 */	bl avdisp_set_post_multiply_color
+/* 8009D04C 00098F6C  4B FF 26 C9 */	bl avdisp_set_post_mult_color
 /* 8009D050 00098F70  38 60 00 01 */	li r3, 1
 /* 8009D054 00098F74  38 80 00 03 */	li r4, 3
 /* 8009D058 00098F78  38 A0 00 01 */	li r5, 1
@@ -1760,7 +1760,7 @@ lbl_8009D264:
 /* 8009D2C4 000991E4  C0 23 00 00 */	lfs f1, 0(r3)
 /* 8009D2C8 000991E8  C0 43 00 04 */	lfs f2, 4(r3)
 /* 8009D2CC 000991EC  C0 63 00 08 */	lfs f3, 8(r3)
-/* 8009D2D0 000991F0  4B FF 24 45 */	bl avdisp_set_post_multiply_color
+/* 8009D2D0 000991F0  4B FF 24 45 */	bl avdisp_set_post_mult_color
 /* 8009D2D4 000991F4  80 6D 9A E8 */	lwz r3, commonGma@sda21(r13)
 /* 8009D2D8 000991F8  80 63 00 08 */	lwz r3, 8(r3)
 /* 8009D2DC 000991FC  80 63 02 C0 */	lwz r3, 0x2c0(r3)
@@ -1769,7 +1769,7 @@ lbl_8009D264:
 /* 8009D2E8 00099208  FC 40 08 90 */	fmr f2, f1
 /* 8009D2EC 0009920C  FC 60 08 90 */	fmr f3, f1
 /* 8009D2F0 00099210  FC 80 08 90 */	fmr f4, f1
-/* 8009D2F4 00099214  4B FF 24 21 */	bl avdisp_set_post_multiply_color
+/* 8009D2F4 00099214  4B FF 24 21 */	bl avdisp_set_post_mult_color
 /* 8009D2F8 00099218  48 00 00 2C */	b lbl_8009D324
 lbl_8009D2FC:
 /* 8009D2FC 0009921C  88 1E 00 29 */	lbz r0, 0x29(r30)
@@ -1953,25 +1953,25 @@ lbl_8009D578:
 /* 8009D578 00099498  54 80 91 DA */	rlwinm r0, r4, 0x12, 7, 0xd
 /* 8009D57C 0009949C  60 03 00 1B */	ori r3, r0, 0x1b
 /* 8009D580 000994A0  50 83 C8 0C */	rlwimi r3, r4, 0x19, 0, 6
-/* 8009D584 000994A4  4B F8 E0 21 */	bl u_play_sound
+/* 8009D584 000994A4  4B F8 E0 21 */	bl u_play_sound_0
 /* 8009D588 000994A8  48 00 00 3C */	b lbl_8009D5C4
 lbl_8009D58C:
 /* 8009D58C 000994AC  54 80 91 DA */	rlwinm r0, r4, 0x12, 7, 0xd
 /* 8009D590 000994B0  60 03 00 58 */	ori r3, r0, 0x58
 /* 8009D594 000994B4  50 83 C8 0C */	rlwimi r3, r4, 0x19, 0, 6
-/* 8009D598 000994B8  4B F8 E0 0D */	bl u_play_sound
+/* 8009D598 000994B8  4B F8 E0 0D */	bl u_play_sound_0
 /* 8009D59C 000994BC  48 00 00 28 */	b lbl_8009D5C4
 lbl_8009D5A0:
 /* 8009D5A0 000994C0  54 80 91 DA */	rlwinm r0, r4, 0x12, 7, 0xd
 /* 8009D5A4 000994C4  60 03 00 59 */	ori r3, r0, 0x59
 /* 8009D5A8 000994C8  50 83 C8 0C */	rlwimi r3, r4, 0x19, 0, 6
-/* 8009D5AC 000994CC  4B F8 DF F9 */	bl u_play_sound
+/* 8009D5AC 000994CC  4B F8 DF F9 */	bl u_play_sound_0
 /* 8009D5B0 000994D0  48 00 00 14 */	b lbl_8009D5C4
 lbl_8009D5B4:
 /* 8009D5B4 000994D4  54 80 91 DA */	rlwinm r0, r4, 0x12, 7, 0xd
 /* 8009D5B8 000994D8  60 03 00 1C */	ori r3, r0, 0x1c
 /* 8009D5BC 000994DC  50 83 C8 0C */	rlwimi r3, r4, 0x19, 0, 6
-/* 8009D5C0 000994E0  4B F8 DF E5 */	bl u_play_sound
+/* 8009D5C0 000994E0  4B F8 DF E5 */	bl u_play_sound_0
 lbl_8009D5C4:
 /* 8009D5C4 000994E4  80 01 00 24 */	lwz r0, 0x24(r1)
 /* 8009D5C8 000994E8  83 E1 00 1C */	lwz r31, 0x1c(r1)

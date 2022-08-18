@@ -224,8 +224,8 @@ lbl_00000360:
 /* 00000384 80060008 */ lwz r0, 8(r6)
 /* 00000388 5400077B */ rlwinm. r0, r0, 0, 0x1d, 0x1d
 /* 0000038C 40820198 */ bne lbl_00000524
-/* 00000390 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00000394 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00000390 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00000394 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00000398 A0830008 */ lhz r4, 8(r3)
 /* 0000039C 3C600000 */ lis r3, lbl_10000000@ha
 /* 000003A0 38630000 */ addi r3, r3, lbl_10000000@l
@@ -234,8 +234,8 @@ lbl_00000360:
 /* 000003AC 5480077B */ rlwinm. r0, r4, 0, 0x1d, 0x1d
 /* 000003B0 7C650774 */ extsb r5, r3
 /* 000003B4 40820018 */ bne lbl_000003CC
-/* 000003B8 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 000003BC 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 000003B8 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 000003BC 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 000003C0 A0030008 */ lhz r0, 8(r3)
 /* 000003C4 5400077B */ rlwinm. r0, r0, 0, 0x1d, 0x1d
 /* 000003C8 41820018 */ beq lbl_000003E0
@@ -248,8 +248,8 @@ lbl_000003CC:
 lbl_000003E0:
 /* 000003E0 54800739 */ rlwinm. r0, r4, 0, 0x1c, 0x1c
 /* 000003E4 40820018 */ bne lbl_000003FC
-/* 000003E8 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 000003EC 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 000003E8 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 000003EC 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 000003F0 A0030008 */ lhz r0, 8(r3)
 /* 000003F4 54000739 */ rlwinm. r0, r0, 0, 0x1c, 0x1c
 /* 000003F8 41820014 */ beq lbl_0000040C
@@ -264,7 +264,7 @@ lbl_0000040C:
 /* 00000414 7C1D0000 */ cmpw r29, r0
 /* 00000418 41820010 */ beq lbl_00000428
 /* 0000041C 3860006C */ li r3, 0x6c
-/* 00000420 4BFFFD8D */ bl u_play_sound
+/* 00000420 4BFFFD8D */ bl u_play_sound_0
 /* 00000424 93BF0014 */ stw r29, 0x14(r31)
 lbl_00000428:
 /* 00000428 801F0014 */ lwz r0, 0x14(r31)
@@ -277,13 +277,13 @@ lbl_00000428:
 /* 00000444 41820008 */ beq lbl_0000044C
 /* 00000448 48000054 */ b lbl_0000049C
 lbl_0000044C:
-/* 0000044C 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00000450 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 0000044C 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00000450 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00000454 A0030004 */ lhz r0, 4(r3)
 /* 00000458 540005EF */ rlwinm. r0, r0, 0, 0x17, 0x17
 /* 0000045C 41820040 */ beq lbl_0000049C
 /* 00000460 3860006A */ li r3, 0x6a
-/* 00000464 4BFFFD49 */ bl u_play_sound
+/* 00000464 4BFFFD49 */ bl u_play_sound_0
 /* 00000468 38600058 */ li r3, 0x58
 /* 0000046C 48003D99 */ bl lbl_00004204
 /* 00000470 3C600000 */ lis r3, modeCtrl@ha
@@ -298,8 +298,8 @@ lbl_0000044C:
 /* 00000494 B0030000 */ sth r0, gameSubmodeRequest@l(r3)
 /* 00000498 480000C8 */ b lbl_00000560
 lbl_0000049C:
-/* 0000049C 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000004A0 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 0000049C 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000004A0 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000004A4 A0030004 */ lhz r0, 4(r3)
 /* 000004A8 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 000004AC 418200B4 */ beq lbl_00000560
@@ -308,7 +308,7 @@ lbl_0000049C:
 /* 000004B8 7C000775 */ extsb. r0, r0
 /* 000004BC 408200A4 */ bne lbl_00000560
 /* 000004C0 3860006B */ li r3, 0x6b
-/* 000004C4 4BFFFCE9 */ bl u_play_sound
+/* 000004C4 4BFFFCE9 */ bl u_play_sound_0
 /* 000004C8 4BFFFCE5 */ bl func_8009F4C4
 /* 000004CC 5460063E */ clrlwi r0, r3, 0x18
 /* 000004D0 28000001 */ cmplwi r0, 1
@@ -401,7 +401,7 @@ lbl_000005E8:
 /* 00000618 3C600000 */ lis r3, lbl_0000C6A5@ha
 /* 0000061C 38630000 */ addi r3, r3, lbl_0000C6A5@l
 /* 00000620 88630000 */ lbz r3, 0(r3)
-/* 00000624 4BFFFB89 */ bl u_play_sound
+/* 00000624 4BFFFB89 */ bl u_play_sound_0
 /* 00000628 3800003C */ li r0, 0x3c
 /* 0000062C 901E001C */ stw r0, 0x1c(r30)
 lbl_00000630:
@@ -427,13 +427,13 @@ lbl_00000664:
 /* 00000674 38800000 */ li r4, 0
 /* 00000678 4BFFFB35 */ bl u_play_music
 lbl_0000067C:
-/* 0000067C 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00000680 38830000 */ addi r4, r3, u_unkInputArr1@l
+/* 0000067C 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00000680 38830000 */ addi r4, r3, g_currPlayerButtons@l
 /* 00000684 A0A40008 */ lhz r5, 8(r4)
 /* 00000688 54A007FF */ clrlwi. r0, r5, 0x1f
 /* 0000068C 40820028 */ bne lbl_000006B4
-/* 00000690 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00000694 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00000690 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00000694 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00000698 A0630008 */ lhz r3, 8(r3)
 /* 0000069C 546007FF */ clrlwi. r0, r3, 0x1f
 /* 000006A0 40820014 */ bne lbl_000006B4
@@ -443,7 +443,7 @@ lbl_0000067C:
 /* 000006B0 41820024 */ beq lbl_000006D4
 lbl_000006B4:
 /* 000006B4 3860006C */ li r3, 0x6c
-/* 000006B8 4BFFFAF5 */ bl u_play_sound
+/* 000006B8 4BFFFAF5 */ bl u_play_sound_0
 /* 000006BC 3860FFFF */ li r3, -1
 /* 000006C0 38800001 */ li r4, 1
 /* 000006C4 4BFFFAE9 */ bl u_play_music
@@ -455,7 +455,7 @@ lbl_000006D4:
 /* 000006D8 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 000006DC 41820020 */ beq lbl_000006FC
 /* 000006E0 3860006B */ li r3, 0x6b
-/* 000006E4 4BFFFAC9 */ bl u_play_sound
+/* 000006E4 4BFFFAC9 */ bl u_play_sound_0
 /* 000006E8 3860005C */ li r3, 0x5c
 /* 000006EC 48003B75 */ bl lbl_00004260
 /* 000006F0 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -510,17 +510,17 @@ lbl_0000077C:
 /* 000007A4 3BE30000 */ addi r31, r3, lbl_10000000@l
 /* 000007A8 2C000002 */ cmpwi r0, 2
 /* 000007AC 41820314 */ beq lbl_00000AC0
-/* 000007B0 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 000007B0 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 000007B4 839F0130 */ lwz r28, 0x130(r31)
-/* 000007B8 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000007B8 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000007BC A0830008 */ lhz r4, 8(r3)
 /* 000007C0 3BA30008 */ addi r29, r3, 8
 /* 000007C4 3BDF0130 */ addi r30, r31, 0x130
 /* 000007C8 54800739 */ rlwinm. r0, r4, 0, 0x1c, 0x1c
 /* 000007CC 38BC0000 */ addi r5, r28, 0
 /* 000007D0 40820018 */ bne lbl_000007E8
-/* 000007D4 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 000007D8 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 000007D4 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 000007D8 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 000007DC A0630008 */ lhz r3, 8(r3)
 /* 000007E0 54600739 */ rlwinm. r0, r3, 0, 0x1c, 0x1c
 /* 000007E4 4182001C */ beq lbl_00000800
@@ -547,7 +547,7 @@ lbl_00000828:
 /* 00000828 7C1C2800 */ cmpw r28, r5
 /* 0000082C 41820010 */ beq lbl_0000083C
 /* 00000830 3860006C */ li r3, 0x6c
-/* 00000834 4BFFF979 */ bl u_play_sound
+/* 00000834 4BFFF979 */ bl u_play_sound_0
 /* 00000838 939E0000 */ stw r28, 0(r30)
 lbl_0000083C:
 /* 0000083C 801E0000 */ lwz r0, 0(r30)
@@ -557,13 +557,13 @@ lbl_0000083C:
 /* 0000084C 40800008 */ bge lbl_00000854
 /* 00000850 48000038 */ b lbl_00000888
 lbl_00000854:
-/* 00000854 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00000858 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00000854 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00000858 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 0000085C A0030004 */ lhz r0, 4(r3)
 /* 00000860 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 00000864 41820024 */ beq lbl_00000888
 /* 00000868 3860006B */ li r3, 0x6b
-/* 0000086C 4BFFF941 */ bl u_play_sound
+/* 0000086C 4BFFF941 */ bl u_play_sound_0
 /* 00000870 3860005F */ li r3, 0x5f
 /* 00000874 480039ED */ bl lbl_00004260
 /* 00000878 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -587,15 +587,15 @@ lbl_000008AC:
 /* 000008B8 48000120 */ b lbl_000009D8
 lbl_000008BC:
 /* 000008BC 38000000 */ li r0, 0
-/* 000008C0 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 000008C0 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 000008C4 901F0134 */ stw r0, 0x134(r31)
-/* 000008C8 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000008C8 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000008CC A0030004 */ lhz r0, 4(r3)
 /* 000008D0 3BDF0134 */ addi r30, r31, 0x134
 /* 000008D4 540005EF */ rlwinm. r0, r0, 0, 0x17, 0x17
 /* 000008D8 418201E8 */ beq lbl_00000AC0
 /* 000008DC 3860006A */ li r3, 0x6a
-/* 000008E0 4BFFF8CD */ bl u_play_sound
+/* 000008E0 4BFFF8CD */ bl u_play_sound_0
 /* 000008E4 801E0000 */ lwz r0, 0(r30)
 /* 000008E8 5403063E */ clrlwi r3, r0, 0x18
 /* 000008EC 4BFFF8C1 */ bl func_8009F49C
@@ -604,15 +604,15 @@ lbl_000008BC:
 /* 000008F8 480001C8 */ b lbl_00000AC0
 lbl_000008FC:
 /* 000008FC 38000001 */ li r0, 1
-/* 00000900 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 00000900 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 00000904 901F0134 */ stw r0, 0x134(r31)
-/* 00000908 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00000908 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 0000090C A0030004 */ lhz r0, 4(r3)
 /* 00000910 3BDF0134 */ addi r30, r31, 0x134
 /* 00000914 540005EF */ rlwinm. r0, r0, 0, 0x17, 0x17
 /* 00000918 418201A8 */ beq lbl_00000AC0
 /* 0000091C 3860006A */ li r3, 0x6a
-/* 00000920 4BFFF88D */ bl u_play_sound
+/* 00000920 4BFFF88D */ bl u_play_sound_0
 /* 00000924 801E0000 */ lwz r0, 0(r30)
 /* 00000928 5403063E */ clrlwi r3, r0, 0x18
 /* 0000092C 4BFFF881 */ bl func_8009F49C
@@ -626,8 +626,8 @@ lbl_0000093C:
 /* 00000948 38BD0000 */ addi r5, r29, 0
 /* 0000094C 548007FF */ clrlwi. r0, r4, 0x1f
 /* 00000950 40820028 */ bne lbl_00000978
-/* 00000954 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00000958 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00000954 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00000958 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 0000095C A0630008 */ lhz r3, 8(r3)
 /* 00000960 546007FF */ clrlwi. r0, r3, 0x1f
 /* 00000964 40820014 */ bne lbl_00000978
@@ -646,18 +646,18 @@ lbl_0000098C:
 /* 0000098C 7C05E800 */ cmpw r5, r29
 /* 00000990 41820130 */ beq lbl_00000AC0
 /* 00000994 38600065 */ li r3, 0x65
-/* 00000998 4BFFF815 */ bl u_play_sound
+/* 00000998 4BFFF815 */ bl u_play_sound_0
 /* 0000099C 57A3063E */ clrlwi r3, r29, 0x18
 /* 000009A0 4BFFF80D */ bl func_8009F4CC
 /* 000009A4 4800011C */ b lbl_00000AC0
 lbl_000009A8:
-/* 000009A8 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000009AC 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000009A8 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000009AC 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000009B0 A0030004 */ lhz r0, 4(r3)
 /* 000009B4 540005EF */ rlwinm. r0, r0, 0, 0x17, 0x17
 /* 000009B8 41820108 */ beq lbl_00000AC0
 /* 000009BC 3860006A */ li r3, 0x6a
-/* 000009C0 4BFFF7ED */ bl u_play_sound
+/* 000009C0 4BFFF7ED */ bl u_play_sound_0
 /* 000009C4 38000004 */ li r0, 4
 /* 000009C8 901E0000 */ stw r0, 0(r30)
 /* 000009CC 38000000 */ li r0, 0
@@ -670,8 +670,8 @@ lbl_000009D8:
 /* 000009E4 548007BD */ rlwinm. r0, r4, 0, 0x1e, 0x1e
 /* 000009E8 3BE50000 */ addi r31, r5, 0
 /* 000009EC 40820018 */ bne lbl_00000A04
-/* 000009F0 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 000009F4 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 000009F0 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 000009F4 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 000009F8 A0630008 */ lhz r3, 8(r3)
 /* 000009FC 546007BD */ rlwinm. r0, r3, 0, 0x1e, 0x1e
 /* 00000A00 4182000C */ beq lbl_00000A0C
@@ -689,11 +689,11 @@ lbl_00000A20:
 /* 00000A20 7C1F2800 */ cmpw r31, r5
 /* 00000A24 41820010 */ beq lbl_00000A34
 /* 00000A28 3860006C */ li r3, 0x6c
-/* 00000A2C 4BFFF781 */ bl u_play_sound
+/* 00000A2C 4BFFF781 */ bl u_play_sound_0
 /* 00000A30 93FD0000 */ stw r31, 0(r29)
 lbl_00000A34:
-/* 00000A34 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00000A38 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00000A34 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00000A38 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00000A3C A0630004 */ lhz r3, 4(r3)
 /* 00000A40 546005EF */ rlwinm. r0, r3, 0, 0x17, 0x17
 /* 00000A44 4182003C */ beq lbl_00000A80
@@ -701,14 +701,14 @@ lbl_00000A34:
 /* 00000A4C 2C000001 */ cmpwi r0, 1
 /* 00000A50 4082001C */ bne lbl_00000A6C
 /* 00000A54 3860006A */ li r3, 0x6a
-/* 00000A58 4BFFF755 */ bl u_play_sound
+/* 00000A58 4BFFF755 */ bl u_play_sound_0
 /* 00000A5C 4BFFF751 */ bl func_800A4DF0
 /* 00000A60 38000005 */ li r0, 5
 /* 00000A64 901E0000 */ stw r0, 0(r30)
 /* 00000A68 48000058 */ b lbl_00000AC0
 lbl_00000A6C:
 /* 00000A6C 3860006B */ li r3, 0x6b
-/* 00000A70 4BFFF73D */ bl u_play_sound
+/* 00000A70 4BFFF73D */ bl u_play_sound_0
 /* 00000A74 38000003 */ li r0, 3
 /* 00000A78 901E0000 */ stw r0, 0(r30)
 /* 00000A7C 48000044 */ b lbl_00000AC0
@@ -716,18 +716,18 @@ lbl_00000A80:
 /* 00000A80 546005AD */ rlwinm. r0, r3, 0, 0x16, 0x16
 /* 00000A84 4182003C */ beq lbl_00000AC0
 /* 00000A88 3860006B */ li r3, 0x6b
-/* 00000A8C 4BFFF721 */ bl u_play_sound
+/* 00000A8C 4BFFF721 */ bl u_play_sound_0
 /* 00000A90 38000003 */ li r0, 3
 /* 00000A94 901E0000 */ stw r0, 0(r30)
 /* 00000A98 48000028 */ b lbl_00000AC0
 lbl_00000A9C:
-/* 00000A9C 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00000AA0 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00000A9C 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00000AA0 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00000AA4 A0030004 */ lhz r0, 4(r3)
 /* 00000AA8 28000000 */ cmplwi r0, 0
 /* 00000AAC 41820014 */ beq lbl_00000AC0
 /* 00000AB0 3860006B */ li r3, 0x6b
-/* 00000AB4 4BFFF6F9 */ bl u_play_sound
+/* 00000AB4 4BFFF6F9 */ bl u_play_sound_0
 /* 00000AB8 38000003 */ li r0, 3
 /* 00000ABC 901E0000 */ stw r0, 0(r30)
 lbl_00000AC0:
@@ -1277,13 +1277,13 @@ lbl_000012C4:
 /* 000012D8 3AD60C00 */ addi r22, r22, 0xc00
 /* 000012DC 3BBD003C */ addi r29, r29, 0x3c
 /* 000012E0 4180FA38 */ blt lbl_00000D18
-/* 000012E4 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000012E8 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000012E4 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000012E8 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000012EC A0630004 */ lhz r3, 4(r3)
 /* 000012F0 546005EF */ rlwinm. r0, r3, 0, 0x17, 0x17
 /* 000012F4 41820020 */ beq lbl_00001314
 /* 000012F8 3860006A */ li r3, 0x6a
-/* 000012FC 4BFFEEB1 */ bl u_play_sound
+/* 000012FC 4BFFEEB1 */ bl u_play_sound_0
 /* 00001300 38000000 */ li r0, 0
 /* 00001304 90140018 */ stw r0, 0x18(r20)
 /* 00001308 38000001 */ li r0, 1
@@ -1295,33 +1295,33 @@ lbl_00001314:
 /* 0000131C 38600061 */ li r3, 0x61
 /* 00001320 48002F41 */ bl lbl_00004260
 /* 00001324 3860006B */ li r3, 0x6b
-/* 00001328 4BFFEE85 */ bl u_play_sound
+/* 00001328 4BFFEE85 */ bl u_play_sound_0
 /* 0000132C 3C600000 */ lis r3, gameSubmodeRequest@ha
 /* 00001330 380000C2 */ li r0, 0xc2
 /* 00001334 B0030000 */ sth r0, gameSubmodeRequest@l(r3)
 /* 00001338 4800024C */ b lbl_00001584
 lbl_0000133C:
-/* 0000133C 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 0000133C 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 00001340 82540018 */ lwz r18, 0x18(r20)
-/* 00001344 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00001344 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00001348 A0030004 */ lhz r0, 4(r3)
 /* 0000134C 540007BD */ rlwinm. r0, r0, 0, 0x1e, 0x1e
 /* 00001350 40820018 */ bne lbl_00001368
-/* 00001354 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00001358 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00001354 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00001358 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 0000135C A0030004 */ lhz r0, 4(r3)
 /* 00001360 540007BD */ rlwinm. r0, r0, 0, 0x1e, 0x1e
 /* 00001364 41820008 */ beq lbl_0000136C
 lbl_00001368:
 /* 00001368 3A400000 */ li r18, 0
 lbl_0000136C:
-/* 0000136C 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00001370 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 0000136C 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00001370 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00001374 A0030004 */ lhz r0, 4(r3)
 /* 00001378 540007FF */ clrlwi. r0, r0, 0x1f
 /* 0000137C 40820018 */ bne lbl_00001394
-/* 00001380 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00001384 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00001380 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00001384 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00001388 A0030004 */ lhz r0, 4(r3)
 /* 0000138C 540007FF */ clrlwi. r0, r0, 0x1f
 /* 00001390 41820008 */ beq lbl_00001398
@@ -1332,11 +1332,11 @@ lbl_00001398:
 /* 0000139C 7C120000 */ cmpw r18, r0
 /* 000013A0 41820010 */ beq lbl_000013B0
 /* 000013A4 3860006C */ li r3, 0x6c
-/* 000013A8 4BFFEE05 */ bl u_play_sound
+/* 000013A8 4BFFEE05 */ bl u_play_sound_0
 /* 000013AC 92540018 */ stw r18, 0x18(r20)
 lbl_000013B0:
-/* 000013B0 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000013B4 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000013B0 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000013B4 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000013B8 A0630004 */ lhz r3, 4(r3)
 /* 000013BC 546005EF */ rlwinm. r0, r3, 0, 0x17, 0x17
 /* 000013C0 41820150 */ beq lbl_00001510
@@ -1344,7 +1344,7 @@ lbl_000013B0:
 /* 000013C8 2C000001 */ cmpwi r0, 1
 /* 000013CC 40820130 */ bne lbl_000014FC
 /* 000013D0 3860006A */ li r3, 0x6a
-/* 000013D4 4BFFEDD9 */ bl u_play_sound
+/* 000013D4 4BFFEDD9 */ bl u_play_sound_0
 /* 000013D8 38000004 */ li r0, 4
 /* 000013DC 3C600000 */ lis r3, controllerInfo@ha
 /* 000013E0 7C0903A6 */ mtctr r0
@@ -1424,7 +1424,7 @@ lbl_000014D0:
 /* 000014F8 4800008C */ b lbl_00001584
 lbl_000014FC:
 /* 000014FC 3860006B */ li r3, 0x6b
-/* 00001500 4BFFECAD */ bl u_play_sound
+/* 00001500 4BFFECAD */ bl u_play_sound_0
 /* 00001504 38000003 */ li r0, 3
 /* 00001508 9014001C */ stw r0, 0x1c(r20)
 /* 0000150C 48000078 */ b lbl_00001584
@@ -1432,32 +1432,32 @@ lbl_00001510:
 /* 00001510 546005AD */ rlwinm. r0, r3, 0, 0x16, 0x16
 /* 00001514 41820070 */ beq lbl_00001584
 /* 00001518 3860006B */ li r3, 0x6b
-/* 0000151C 4BFFEC91 */ bl u_play_sound
+/* 0000151C 4BFFEC91 */ bl u_play_sound_0
 /* 00001520 38000003 */ li r0, 3
 /* 00001524 9014001C */ stw r0, 0x1c(r20)
 /* 00001528 4800005C */ b lbl_00001584
 lbl_0000152C:
-/* 0000152C 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00001530 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 0000152C 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00001530 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00001534 A0030004 */ lhz r0, 4(r3)
 /* 00001538 28000000 */ cmplwi r0, 0
 /* 0000153C 41820048 */ beq lbl_00001584
 /* 00001540 38600061 */ li r3, 0x61
 /* 00001544 48002D1D */ bl lbl_00004260
 /* 00001548 3860006B */ li r3, 0x6b
-/* 0000154C 4BFFEC61 */ bl u_play_sound
+/* 0000154C 4BFFEC61 */ bl u_play_sound_0
 /* 00001550 3C600000 */ lis r3, gameSubmodeRequest@ha
 /* 00001554 380000C2 */ li r0, 0xc2
 /* 00001558 B0030000 */ sth r0, gameSubmodeRequest@l(r3)
 /* 0000155C 48000028 */ b lbl_00001584
 lbl_00001560:
-/* 00001560 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00001564 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00001560 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00001564 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00001568 A0030004 */ lhz r0, 4(r3)
 /* 0000156C 28000000 */ cmplwi r0, 0
 /* 00001570 41820014 */ beq lbl_00001584
 /* 00001574 3860006B */ li r3, 0x6b
-/* 00001578 4BFFEC35 */ bl u_play_sound
+/* 00001578 4BFFEC35 */ bl u_play_sound_0
 /* 0000157C 38000000 */ li r0, 0
 /* 00001580 9014001C */ stw r0, 0x1c(r20)
 lbl_00001584:
@@ -2219,15 +2219,15 @@ lbl_000020E0:
 /* 00002108 4E800020 */ blr 
 lbl_0000210C:
 /* 0000210C 7C0802A6 */ mflr r0
-/* 00002110 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 00002110 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 00002114 90010004 */ stw r0, 4(r1)
-/* 00002118 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002118 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 0000211C 9421FFF8 */ stwu r1, -8(r1)
 /* 00002120 A0030004 */ lhz r0, 4(r3)
 /* 00002124 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 00002128 41820020 */ beq lbl_00002148
 /* 0000212C 3860006B */ li r3, 0x6b
-/* 00002130 4BFFE07D */ bl u_play_sound
+/* 00002130 4BFFE07D */ bl u_play_sound_0
 /* 00002134 3860005A */ li r3, 0x5a
 /* 00002138 48002129 */ bl lbl_00004260
 /* 0000213C 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -2288,15 +2288,15 @@ lbl_000021D8:
 /* 0000220C 80040008 */ lwz r0, 8(r4)
 /* 00002210 5400077B */ rlwinm. r0, r0, 0, 0x1d, 0x1d
 /* 00002214 40820104 */ bne lbl_00002318
-/* 00002218 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 00002218 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 0000221C 80BC0014 */ lwz r5, 0x14(r28)
-/* 00002220 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002220 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002224 A0830008 */ lhz r4, 8(r3)
 /* 00002228 3BA50000 */ addi r29, r5, 0
 /* 0000222C 548007FF */ clrlwi. r0, r4, 0x1f
 /* 00002230 40820018 */ bne lbl_00002248
-/* 00002234 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002238 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002234 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002238 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 0000223C A0030008 */ lhz r0, 8(r3)
 /* 00002240 540007FF */ clrlwi. r0, r0, 0x1f
 /* 00002244 41820010 */ beq lbl_00002254
@@ -2307,8 +2307,8 @@ lbl_00002248:
 lbl_00002254:
 /* 00002254 548007BD */ rlwinm. r0, r4, 0, 0x1e, 0x1e
 /* 00002258 40820018 */ bne lbl_00002270
-/* 0000225C 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002260 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 0000225C 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002260 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002264 A0030008 */ lhz r0, 8(r3)
 /* 00002268 540007BD */ rlwinm. r0, r0, 0, 0x1e, 0x1e
 /* 0000226C 41820014 */ beq lbl_00002280
@@ -2321,16 +2321,16 @@ lbl_00002280:
 /* 00002280 7C1D2800 */ cmpw r29, r5
 /* 00002284 41820010 */ beq lbl_00002294
 /* 00002288 3860006C */ li r3, 0x6c
-/* 0000228C 4BFFDF21 */ bl u_play_sound
+/* 0000228C 4BFFDF21 */ bl u_play_sound_0
 /* 00002290 93BC0014 */ stw r29, 0x14(r28)
 lbl_00002294:
-/* 00002294 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00002298 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002294 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00002298 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 0000229C A0630004 */ lhz r3, 4(r3)
 /* 000022A0 546005EF */ rlwinm. r0, r3, 0, 0x17, 0x17
 /* 000022A4 4182004C */ beq lbl_000022F0
 /* 000022A8 3860006A */ li r3, 0x6a
-/* 000022AC 4BFFDF01 */ bl u_play_sound
+/* 000022AC 4BFFDF01 */ bl u_play_sound_0
 /* 000022B0 801C0014 */ lwz r0, 0x14(r28)
 /* 000022B4 2C000000 */ cmpwi r0, 0
 /* 000022B8 40820014 */ bne lbl_000022CC
@@ -2353,7 +2353,7 @@ lbl_000022F0:
 /* 000022F0 546005AD */ rlwinm. r0, r3, 0, 0x16, 0x16
 /* 000022F4 41820358 */ beq lbl_0000264C
 /* 000022F8 3860006B */ li r3, 0x6b
-/* 000022FC 4BFFDEB1 */ bl u_play_sound
+/* 000022FC 4BFFDEB1 */ bl u_play_sound_0
 /* 00002300 3860005B */ li r3, 0x5b
 /* 00002304 48001F5D */ bl lbl_00004260
 /* 00002308 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -2387,7 +2387,7 @@ lbl_00002318:
 /* 00002374 4BFFDE39 */ bl OSSetCurrentHeap
 /* 00002378 4BFFDE35 */ bl func_800885EC
 /* 0000237C 38600000 */ li r3, 0
-/* 00002380 4BFFDE2D */ bl func_800886E0
+/* 00002380 4BFFDE2D */ bl init_ranking_screen
 /* 00002384 4BFFDE29 */ bl func_800AB68C
 /* 00002388 4BFFDE25 */ bl func_800AB5F8
 /* 0000238C 48000258 */ b lbl_000025E4
@@ -2398,15 +2398,15 @@ lbl_00002390:
 /* 0000239C 801C001C */ lwz r0, 0x1c(r28)
 /* 000023A0 2C000000 */ cmpwi r0, 0
 /* 000023A4 418100D4 */ bgt lbl_00002478
-/* 000023A8 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 000023A8 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 000023AC 80BC0018 */ lwz r5, 0x18(r28)
-/* 000023B0 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000023B0 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000023B4 A0830008 */ lhz r4, 8(r3)
 /* 000023B8 3BA50000 */ addi r29, r5, 0
 /* 000023BC 548007FF */ clrlwi. r0, r4, 0x1f
 /* 000023C0 40820020 */ bne lbl_000023E0
-/* 000023C4 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 000023C8 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 000023C4 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 000023C8 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 000023CC A0030008 */ lhz r0, 8(r3)
 /* 000023D0 540007FF */ clrlwi. r0, r0, 0x1f
 /* 000023D4 4082000C */ bne lbl_000023E0
@@ -2419,8 +2419,8 @@ lbl_000023E0:
 lbl_000023EC:
 /* 000023EC 548007BD */ rlwinm. r0, r4, 0, 0x1e, 0x1e
 /* 000023F0 40820020 */ bne lbl_00002410
-/* 000023F4 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 000023F8 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 000023F4 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 000023F8 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 000023FC A0030008 */ lhz r0, 8(r3)
 /* 00002400 540007BD */ rlwinm. r0, r0, 0, 0x1e, 0x1e
 /* 00002404 4082000C */ bne lbl_00002410
@@ -2439,7 +2439,7 @@ lbl_00002420:
 /* 00002430 38600000 */ li r3, 0
 /* 00002434 4BFFDD79 */ bl func_8008897C
 /* 00002438 7FA3EB78 */ mr r3, r29
-/* 0000243C 4BFFDD71 */ bl func_800886E0
+/* 0000243C 4BFFDD71 */ bl init_ranking_screen
 /* 00002440 2C1D0001 */ cmpwi r29, 1
 /* 00002444 41820020 */ beq lbl_00002464
 /* 00002448 40800008 */ bge lbl_00002450
@@ -2498,9 +2498,9 @@ lbl_00002490:
 /* 00002500 4BFFDCAD */ bl func_800AB5F8
 /* 00002504 480000E0 */ b lbl_000025E4
 lbl_00002508:
-/* 00002508 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 00002508 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 0000250C 80DC0018 */ lwz r6, 0x18(r28)
-/* 00002510 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002510 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002514 A0A30008 */ lhz r5, 8(r3)
 /* 00002518 54041838 */ slwi r4, r0, 3
 /* 0000251C 3C600000 */ lis r3, lbl_0000C850@ha
@@ -2509,8 +2509,8 @@ lbl_00002508:
 /* 00002528 3BC60000 */ addi r30, r6, 0
 /* 0000252C 7FA02214 */ add r29, r0, r4
 /* 00002530 40820020 */ bne lbl_00002550
-/* 00002534 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002538 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002534 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002538 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 0000253C A0030008 */ lhz r0, 8(r3)
 /* 00002540 540007FF */ clrlwi. r0, r0, 0x1f
 /* 00002544 4082000C */ bne lbl_00002550
@@ -2523,8 +2523,8 @@ lbl_00002550:
 lbl_0000255C:
 /* 0000255C 54A007BD */ rlwinm. r0, r5, 0, 0x1e, 0x1e
 /* 00002560 40820020 */ bne lbl_00002580
-/* 00002564 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002568 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002564 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002568 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 0000256C A0030008 */ lhz r0, 8(r3)
 /* 00002570 540007BD */ rlwinm. r0, r0, 0, 0x1e, 0x1e
 /* 00002574 4082000C */ bne lbl_00002580
@@ -2557,11 +2557,11 @@ lbl_000025C0:
 /* 000025D4 4BFFDBD9 */ bl func_800AB5F8
 lbl_000025D8:
 /* 000025D8 38600065 */ li r3, 0x65
-/* 000025DC 4BFFDBD1 */ bl u_play_sound
+/* 000025DC 4BFFDBD1 */ bl u_play_sound_0
 /* 000025E0 93DC0018 */ stw r30, 0x18(r28)
 lbl_000025E4:
-/* 000025E4 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000025E8 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000025E4 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000025E8 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000025EC A0030004 */ lhz r0, 4(r3)
 /* 000025F0 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 000025F4 41820058 */ beq lbl_0000264C
@@ -2584,7 +2584,7 @@ lbl_00002620:
 lbl_00002634:
 /* 00002634 48006C29 */ bl lbl_0000925C
 /* 00002638 3860006B */ li r3, 0x6b
-/* 0000263C 4BFFDB71 */ bl u_play_sound
+/* 0000263C 4BFFDB71 */ bl u_play_sound_0
 /* 00002640 801F0000 */ lwz r0, 0(r31)
 /* 00002644 540007B8 */ rlwinm r0, r0, 0, 0x1e, 0x1c
 /* 00002648 901F0000 */ stw r0, 0(r31)
@@ -2671,7 +2671,7 @@ lbl_00002768:
 /* 00002770 40820028 */ bne lbl_00002798
 /* 00002774 4BFFDA39 */ bl memcard_cancel_and_unmount
 /* 00002778 3860006B */ li r3, 0x6b
-/* 0000277C 4BFFDA31 */ bl u_play_sound
+/* 0000277C 4BFFDA31 */ bl u_play_sound_0
 /* 00002780 38600059 */ li r3, 0x59
 /* 00002784 48001ADD */ bl lbl_00004260
 /* 00002788 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -2687,15 +2687,15 @@ lbl_00002798:
 /* 000027AC 48004325 */ bl lbl_00006AD0
 /* 000027B0 480004B0 */ b lbl_00002C60
 lbl_000027B4:
-/* 000027B4 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000027B8 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000027B4 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000027B8 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000027BC A0030004 */ lhz r0, 4(r3)
 /* 000027C0 3BA30004 */ addi r29, r3, 4
 /* 000027C4 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 000027C8 41820028 */ beq lbl_000027F0
 /* 000027CC 4BFFD9E1 */ bl memcard_cancel_and_unmount
 /* 000027D0 3860006B */ li r3, 0x6b
-/* 000027D4 4BFFD9D9 */ bl u_play_sound
+/* 000027D4 4BFFD9D9 */ bl u_play_sound_0
 /* 000027D8 38600059 */ li r3, 0x59
 /* 000027DC 48001A85 */ bl lbl_00004260
 /* 000027E0 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -2708,8 +2708,8 @@ lbl_000027F0:
 /* 000027F8 54800739 */ rlwinm. r0, r4, 0, 0x1c, 0x1c
 /* 000027FC 7CA60774 */ extsb r6, r5
 /* 00002800 40820018 */ bne lbl_00002818
-/* 00002804 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002808 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002804 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002808 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 0000280C A0630008 */ lhz r3, 8(r3)
 /* 00002810 54600739 */ rlwinm. r0, r3, 0, 0x1c, 0x1c
 /* 00002814 4182003C */ beq lbl_00002850
@@ -2761,28 +2761,28 @@ lbl_000028A8:
 /* 000028AC 7C1C2800 */ cmpw r28, r5
 /* 000028B0 41820010 */ beq lbl_000028C0
 /* 000028B4 3860006C */ li r3, 0x6c
-/* 000028B8 4BFFD8F5 */ bl u_play_sound
+/* 000028B8 4BFFD8F5 */ bl u_play_sound_0
 /* 000028BC 939E0014 */ stw r28, 0x14(r30)
 lbl_000028C0:
 /* 000028C0 A01D0000 */ lhz r0, 0(r29)
 /* 000028C4 540005EF */ rlwinm. r0, r0, 0, 0x17, 0x17
 /* 000028C8 41820398 */ beq lbl_00002C60
 /* 000028CC 3860006A */ li r3, 0x6a
-/* 000028D0 4BFFD8DD */ bl u_play_sound
+/* 000028D0 4BFFD8DD */ bl u_play_sound_0
 /* 000028D4 38000002 */ li r0, 2
 /* 000028D8 901E0010 */ stw r0, 0x10(r30)
 /* 000028DC 38000000 */ li r0, 0
 /* 000028E0 901E0018 */ stw r0, 0x18(r30)
 /* 000028E4 4800037C */ b lbl_00002C60
 lbl_000028E8:
-/* 000028E8 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000028EC 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000028E8 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000028EC 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000028F0 A0030004 */ lhz r0, 4(r3)
 /* 000028F4 3BA30004 */ addi r29, r3, 4
 /* 000028F8 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 000028FC 41820018 */ beq lbl_00002914
 /* 00002900 3860006B */ li r3, 0x6b
-/* 00002904 4BFFD8A9 */ bl u_play_sound
+/* 00002904 4BFFD8A9 */ bl u_play_sound_0
 /* 00002908 38000001 */ li r0, 1
 /* 0000290C 901E0010 */ stw r0, 0x10(r30)
 /* 00002910 48000350 */ b lbl_00002C60
@@ -2792,8 +2792,8 @@ lbl_00002914:
 /* 0000291C 54800739 */ rlwinm. r0, r4, 0, 0x1c, 0x1c
 /* 00002920 3B850000 */ addi r28, r5, 0
 /* 00002924 40820018 */ bne lbl_0000293C
-/* 00002928 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 0000292C 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002928 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 0000292C 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002930 A0030008 */ lhz r0, 8(r3)
 /* 00002934 54000739 */ rlwinm. r0, r0, 0, 0x1c, 0x1c
 /* 00002938 41820008 */ beq lbl_00002940
@@ -2802,8 +2802,8 @@ lbl_0000293C:
 lbl_00002940:
 /* 00002940 5480077B */ rlwinm. r0, r4, 0, 0x1d, 0x1d
 /* 00002944 40820018 */ bne lbl_0000295C
-/* 00002948 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 0000294C 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002948 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 0000294C 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002950 A0030008 */ lhz r0, 8(r3)
 /* 00002954 5400077B */ rlwinm. r0, r0, 0, 0x1d, 0x1d
 /* 00002958 41820008 */ beq lbl_00002960
@@ -2821,14 +2821,14 @@ lbl_0000297C:
 /* 0000297C 7C1C2800 */ cmpw r28, r5
 /* 00002980 41820010 */ beq lbl_00002990
 /* 00002984 3860006C */ li r3, 0x6c
-/* 00002988 4BFFD825 */ bl u_play_sound
+/* 00002988 4BFFD825 */ bl u_play_sound_0
 /* 0000298C 939E0018 */ stw r28, 0x18(r30)
 lbl_00002990:
 /* 00002990 A01D0000 */ lhz r0, 0(r29)
 /* 00002994 540005EF */ rlwinm. r0, r0, 0, 0x17, 0x17
 /* 00002998 418202C8 */ beq lbl_00002C60
 /* 0000299C 3860006A */ li r3, 0x6a
-/* 000029A0 4BFFD80D */ bl u_play_sound
+/* 000029A0 4BFFD80D */ bl u_play_sound_0
 /* 000029A4 801E0018 */ lwz r0, 0x18(r30)
 /* 000029A8 2C000000 */ cmpwi r0, 0
 /* 000029AC 4082002C */ bne lbl_000029D8
@@ -2854,7 +2854,7 @@ lbl_000029EC:
 /* 000029F4 40820028 */ bne lbl_00002A1C
 /* 000029F8 4BFFD7B5 */ bl memcard_cancel_and_unmount
 /* 000029FC 3860006B */ li r3, 0x6b
-/* 00002A00 4BFFD7AD */ bl u_play_sound
+/* 00002A00 4BFFD7AD */ bl u_play_sound_0
 /* 00002A04 38600059 */ li r3, 0x59
 /* 00002A08 48001859 */ bl lbl_00004260
 /* 00002A0C 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -2883,14 +2883,14 @@ lbl_00002A4C:
 /* 00002A60 B0030000 */ sth r0, gameSubmodeRequest@l(r3)
 /* 00002A64 480001FC */ b lbl_00002C60
 lbl_00002A68:
-/* 00002A68 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00002A6C 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002A68 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00002A6C 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002A70 A0030004 */ lhz r0, 4(r3)
 /* 00002A74 3BA30004 */ addi r29, r3, 4
 /* 00002A78 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 00002A7C 41820018 */ beq lbl_00002A94
 /* 00002A80 3860006B */ li r3, 0x6b
-/* 00002A84 4BFFD729 */ bl u_play_sound
+/* 00002A84 4BFFD729 */ bl u_play_sound_0
 /* 00002A88 38000002 */ li r0, 2
 /* 00002A8C 901E0010 */ stw r0, 0x10(r30)
 /* 00002A90 480001D0 */ b lbl_00002C60
@@ -2901,8 +2901,8 @@ lbl_00002A94:
 /* 00002AA0 54800739 */ rlwinm. r0, r4, 0, 0x1c, 0x1c
 /* 00002AA4 3B650000 */ addi r27, r5, 0
 /* 00002AA8 40820018 */ bne lbl_00002AC0
-/* 00002AAC 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002AB0 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002AAC 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002AB0 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002AB4 A0030008 */ lhz r0, 8(r3)
 /* 00002AB8 54000739 */ rlwinm. r0, r0, 0, 0x1c, 0x1c
 /* 00002ABC 41820008 */ beq lbl_00002AC4
@@ -2911,8 +2911,8 @@ lbl_00002AC0:
 lbl_00002AC4:
 /* 00002AC4 5480077B */ rlwinm. r0, r4, 0, 0x1d, 0x1d
 /* 00002AC8 40820018 */ bne lbl_00002AE0
-/* 00002ACC 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002AD0 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002ACC 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002AD0 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002AD4 A0030008 */ lhz r0, 8(r3)
 /* 00002AD8 5400077B */ rlwinm. r0, r0, 0, 0x1d, 0x1d
 /* 00002ADC 41820008 */ beq lbl_00002AE4
@@ -2922,7 +2922,7 @@ lbl_00002AE4:
 /* 00002AE4 7C1B2800 */ cmpw r27, r5
 /* 00002AE8 41820010 */ beq lbl_00002AF8
 /* 00002AEC 3860006C */ li r3, 0x6c
-/* 00002AF0 4BFFD6BD */ bl u_play_sound
+/* 00002AF0 4BFFD6BD */ bl u_play_sound_0
 /* 00002AF4 937C0000 */ stw r27, 0(r28)
 lbl_00002AF8:
 /* 00002AF8 A01D0000 */ lhz r0, 0(r29)
@@ -2932,13 +2932,13 @@ lbl_00002AF8:
 /* 00002B08 2C000001 */ cmpwi r0, 1
 /* 00002B0C 40820018 */ bne lbl_00002B24
 /* 00002B10 3860006B */ li r3, 0x6b
-/* 00002B14 4BFFD699 */ bl u_play_sound
+/* 00002B14 4BFFD699 */ bl u_play_sound_0
 /* 00002B18 38000002 */ li r0, 2
 /* 00002B1C 901E0010 */ stw r0, 0x10(r30)
 /* 00002B20 48000140 */ b lbl_00002C60
 lbl_00002B24:
 /* 00002B24 3860006A */ li r3, 0x6a
-/* 00002B28 4BFFD685 */ bl u_play_sound
+/* 00002B28 4BFFD685 */ bl u_play_sound_0
 /* 00002B2C 38600007 */ li r3, 7
 /* 00002B30 4BFFD67D */ bl func_8009F49C
 /* 00002B34 387F629C */ addi r3, r31, 0x629c
@@ -2955,7 +2955,7 @@ lbl_00002B54:
 /* 00002B5C 40820028 */ bne lbl_00002B84
 /* 00002B60 4BFFD64D */ bl memcard_cancel_and_unmount
 /* 00002B64 3860006B */ li r3, 0x6b
-/* 00002B68 4BFFD645 */ bl u_play_sound
+/* 00002B68 4BFFD645 */ bl u_play_sound_0
 /* 00002B6C 38600059 */ li r3, 0x59
 /* 00002B70 480016F1 */ bl lbl_00004260
 /* 00002B74 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -2997,7 +2997,7 @@ lbl_00002BE8:
 /* 00002BF4 40800028 */ bge lbl_00002C1C
 /* 00002BF8 4BFFD5B5 */ bl memcard_cancel_and_unmount
 /* 00002BFC 3860006B */ li r3, 0x6b
-/* 00002C00 4BFFD5AD */ bl u_play_sound
+/* 00002C00 4BFFD5AD */ bl u_play_sound_0
 /* 00002C04 38600059 */ li r3, 0x59
 /* 00002C08 48001659 */ bl lbl_00004260
 /* 00002C0C 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -3127,13 +3127,13 @@ lbl_00002DA4:
 /* 00002DD4 7C630011 */ subfc. r3, r3, r0
 /* 00002DD8 7C1E0378 */ mr r30, r0
 /* 00002DDC 41820034 */ beq lbl_00002E10
-/* 00002DE0 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00002DE4 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002DE0 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00002DE4 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002DE8 A0630004 */ lhz r3, 4(r3)
 /* 00002DEC 546307FF */ clrlwi. r3, r3, 0x1f
 /* 00002DF0 40820018 */ bne lbl_00002E08
-/* 00002DF4 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002DF8 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002DF4 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002DF8 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002DFC A0630004 */ lhz r3, 4(r3)
 /* 00002E00 546307FF */ clrlwi. r3, r3, 0x1f
 /* 00002E04 41820038 */ beq lbl_00002E3C
@@ -3141,13 +3141,13 @@ lbl_00002E08:
 /* 00002E08 3BDEFFFF */ addi r30, r30, -1  ;# fixed addi
 /* 00002E0C 48000030 */ b lbl_00002E3C
 lbl_00002E10:
-/* 00002E10 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00002E14 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002E10 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00002E14 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002E18 A0630004 */ lhz r3, 4(r3)
 /* 00002E1C 546307BD */ rlwinm. r3, r3, 0, 0x1e, 0x1e
 /* 00002E20 40820018 */ bne lbl_00002E38
-/* 00002E24 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002E28 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002E24 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002E28 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002E2C A0630004 */ lhz r3, 4(r3)
 /* 00002E30 546307BD */ rlwinm. r3, r3, 0, 0x1e, 0x1e
 /* 00002E34 41820008 */ beq lbl_00002E3C
@@ -3157,13 +3157,13 @@ lbl_00002E3C:
 /* 00002E3C 57C3063E */ clrlwi r3, r30, 0x18
 /* 00002E40 28030002 */ cmplwi r3, 2
 /* 00002E44 40800034 */ bge lbl_00002E78
-/* 00002E48 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00002E4C 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002E48 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00002E4C 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002E50 A0630004 */ lhz r3, 4(r3)
 /* 00002E54 5463077B */ rlwinm. r3, r3, 0, 0x1d, 0x1d
 /* 00002E58 40820018 */ bne lbl_00002E70
-/* 00002E5C 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002E60 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002E5C 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002E60 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002E64 A0630004 */ lhz r3, 4(r3)
 /* 00002E68 5463077B */ rlwinm. r3, r3, 0, 0x1d, 0x1d
 /* 00002E6C 41820038 */ beq lbl_00002EA4
@@ -3171,13 +3171,13 @@ lbl_00002E70:
 /* 00002E70 3BDE0002 */ addi r30, r30, 2
 /* 00002E74 48000030 */ b lbl_00002EA4
 lbl_00002E78:
-/* 00002E78 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00002E7C 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002E78 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00002E7C 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002E80 A0630004 */ lhz r3, 4(r3)
 /* 00002E84 54630739 */ rlwinm. r3, r3, 0, 0x1c, 0x1c
 /* 00002E88 40820018 */ bne lbl_00002EA0
-/* 00002E8C 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00002E90 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00002E8C 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00002E90 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00002E94 A0630004 */ lhz r3, 4(r3)
 /* 00002E98 54630739 */ rlwinm. r3, r3, 0, 0x1c, 0x1c
 /* 00002E9C 41820008 */ beq lbl_00002EA4
@@ -3193,16 +3193,16 @@ lbl_00002EB4:
 /* 00002EB8 7C030040 */ cmplw r3, r0
 /* 00002EBC 41820010 */ beq lbl_00002ECC
 /* 00002EC0 3860006C */ li r3, 0x6c
-/* 00002EC4 4BFFD2E9 */ bl u_play_sound
+/* 00002EC4 4BFFD2E9 */ bl u_play_sound_0
 /* 00002EC8 9BDF0000 */ stb r30, 0(r31)
 lbl_00002ECC:
-/* 00002ECC 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00002ED0 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00002ECC 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00002ED0 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00002ED4 A0030004 */ lhz r0, 4(r3)
 /* 00002ED8 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 00002EDC 41820020 */ beq lbl_00002EFC
 /* 00002EE0 3860006B */ li r3, 0x6b
-/* 00002EE4 4BFFD2C9 */ bl u_play_sound
+/* 00002EE4 4BFFD2C9 */ bl u_play_sound_0
 /* 00002EE8 3860005D */ li r3, 0x5d
 /* 00002EEC 48001375 */ bl lbl_00004260
 /* 00002EF0 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -3259,7 +3259,7 @@ lbl_00002FA8:
 /* 00002FB0 5400103A */ slwi r0, r0, 2
 /* 00002FB4 7C7F0214 */ add r3, r31, r0
 /* 00002FB8 80630000 */ lwz r3, 0(r3)
-/* 00002FBC 4BFFD1F1 */ bl u_get_replay_info
+/* 00002FBC 4BFFD1F1 */ bl get_replay_header
 /* 00002FC0 3C600000 */ lis r3, currStageId@ha
 /* 00002FC4 881D6E9E */ lbz r0, 0x6e9e(r29)
 /* 00002FC8 3B230000 */ addi r25, r3, currStageId@l
@@ -3318,7 +3318,7 @@ lbl_00002FA8:
 /* 0000309C 801E0000 */ lwz r0, 0(r30)
 /* 000030A0 60000008 */ ori r0, r0, 8
 /* 000030A4 901E0000 */ stw r0, 0(r30)
-/* 000030A8 4BFFD105 */ bl func_800972CC
+/* 000030A8 4BFFD105 */ bl rend_efc_mirror_enable
 /* 000030AC 38610008 */ addi r3, r1, 8
 /* 000030B0 38800000 */ li r4, 0
 /* 000030B4 38A00018 */ li r5, 0x18
@@ -3329,7 +3329,7 @@ lbl_00002FA8:
 /* 000030C8 38A10008 */ addi r5, r1, 8
 /* 000030CC 38600002 */ li r3, 2
 /* 000030D0 38800003 */ li r4, 3
-/* 000030D4 4BFFD0D9 */ bl func_8009544C
+/* 000030D4 4BFFD0D9 */ bl rend_efc_enable
 /* 000030D8 3C600000 */ lis r3, backgroundInfo@ha
 /* 000030DC A8830000 */ lha r4, backgroundInfo@l(r3)
 /* 000030E0 3C600000 */ lis r3, backgroundSongs@ha
@@ -3454,8 +3454,8 @@ lbl_00003240:
 /* 000032A4 7F653214 */ add r27, r5, r6
 /* 000032A8 7F202214 */ add r25, r0, r4
 /* 000032AC 41820068 */ beq lbl_00003314
-/* 000032B0 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 000032B4 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 000032B0 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 000032B4 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 000032B8 A0030004 */ lhz r0, 4(r3)
 /* 000032BC 5400056B */ rlwinm. r0, r0, 0, 0x15, 0x15
 /* 000032C0 41820020 */ beq lbl_000032E0
@@ -3482,8 +3482,8 @@ lbl_00003300:
 /* 0000330C 90030000 */ stw r0, 0(r3)
 /* 00003310 48000020 */ b lbl_00003330
 lbl_00003314:
-/* 00003314 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00003318 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00003314 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00003318 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 0000331C A0030004 */ lhz r0, 4(r3)
 /* 00003320 5400056B */ rlwinm. r0, r0, 0, 0x15, 0x15
 /* 00003324 4182000C */ beq lbl_00003330
@@ -3558,8 +3558,8 @@ lbl_000033F4:
 lbl_0000342C:
 /* 0000342C 2C000000 */ cmpwi r0, 0
 /* 00003430 4082004C */ bne lbl_0000347C
-/* 00003434 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00003438 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00003434 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00003438 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 0000343C A0030004 */ lhz r0, 4(r3)
 /* 00003440 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 00003444 41820038 */ beq lbl_0000347C
@@ -3584,8 +3584,8 @@ lbl_0000347C:
 /* 0000348C 540007BD */ rlwinm. r0, r0, 0, 0x1e, 0x1e
 /* 00003490 40820068 */ bne lbl_000034F8
 lbl_00003494:
-/* 00003494 3C600000 */ lis r3, u_unkInputArr1@ha
-/* 00003498 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00003494 3C600000 */ lis r3, g_currPlayerButtons@ha
+/* 00003498 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 0000349C A0A30004 */ lhz r5, 4(r3)
 /* 000034A0 54A007FF */ clrlwi. r0, r5, 0x1f
 /* 000034A4 41820028 */ beq lbl_000034CC
@@ -3644,7 +3644,7 @@ lbl_0000351C:
 /* 0000356C 881A002E */ lbz r0, 0x2e(r26)
 /* 00003570 7C000774 */ extsb r0, r0
 /* 00003574 90040000 */ stw r0, 0(r4)
-/* 00003578 4BFFCC35 */ bl func_8002B610
+/* 00003578 4BFFCC35 */ bl u_play_sound_1_dupe
 /* 0000357C 907E6EBC */ stw r3, 0x6ebc(r30)
 lbl_00003580:
 /* 00003580 A81E6EB4 */ lha r0, 0x6eb4(r30)
@@ -3756,7 +3756,7 @@ lbl_000036A4:
 /* 0000370C 7C7F0214 */ add r3, r31, r0
 /* 00003710 80630000 */ lwz r3, 0(r3)
 /* 00003714 38810020 */ addi r4, r1, 0x20
-/* 00003718 4BFFCA95 */ bl u_get_replay_info
+/* 00003718 4BFFCA95 */ bl get_replay_header
 /* 0000371C 801C0000 */ lwz r0, 0(r28)
 /* 00003720 5400103A */ slwi r0, r0, 2
 /* 00003724 7C7F0214 */ add r3, r31, r0
@@ -3790,7 +3790,7 @@ lbl_000036A4:
 /* 00003794 80180000 */ lwz r0, 0(r24)
 /* 00003798 60000008 */ ori r0, r0, 8
 /* 0000379C 90180000 */ stw r0, 0(r24)
-/* 000037A0 4BFFCA0D */ bl func_800972CC
+/* 000037A0 4BFFCA0D */ bl rend_efc_mirror_enable
 /* 000037A4 38610008 */ addi r3, r1, 8
 /* 000037A8 38800000 */ li r4, 0
 /* 000037AC 38A00018 */ li r5, 0x18
@@ -3801,7 +3801,7 @@ lbl_000036A4:
 /* 000037C0 38A10008 */ addi r5, r1, 8
 /* 000037C4 38600002 */ li r3, 2
 /* 000037C8 38800003 */ li r4, 3
-/* 000037CC 4BFFC9E1 */ bl func_8009544C
+/* 000037CC 4BFFC9E1 */ bl rend_efc_enable
 /* 000037D0 A8790000 */ lha r3, 0(r25)
 /* 000037D4 4BFFC9D9 */ bl light_init
 /* 000037D8 38000009 */ li r0, 9
@@ -4115,9 +4115,9 @@ lbl_00003C2C:
 /* 00003C68 4E800020 */ blr 
 lbl_00003C6C:
 /* 00003C6C 7C0802A6 */ mflr r0
-/* 00003C70 3C600000 */ lis r3, u_unkInputArr1@ha
+/* 00003C70 3C600000 */ lis r3, g_currPlayerButtons@ha
 /* 00003C74 90010004 */ stw r0, 4(r1)
-/* 00003C78 38630000 */ addi r3, r3, u_unkInputArr1@l
+/* 00003C78 38630000 */ addi r3, r3, g_currPlayerButtons@l
 /* 00003C7C 9421FFE8 */ stwu r1, -0x18(r1)
 /* 00003C80 93E10014 */ stw r31, 0x14(r1)
 /* 00003C84 93C10010 */ stw r30, 0x10(r1)
@@ -4130,8 +4130,8 @@ lbl_00003C6C:
 /* 00003CA0 83A30114 */ lwz r29, 0x114(r3)
 /* 00003CA4 3BE300FC */ addi r31, r3, 0xfc
 /* 00003CA8 40820028 */ bne lbl_00003CD0
-/* 00003CAC 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00003CB0 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00003CAC 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00003CB0 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00003CB4 A0630004 */ lhz r3, 4(r3)
 /* 00003CB8 54600739 */ rlwinm. r0, r3, 0, 0x1c, 0x1c
 /* 00003CBC 40820014 */ bne lbl_00003CD0
@@ -4148,14 +4148,14 @@ lbl_00003CDC:
 /* 00003CE0 7C1D0000 */ cmpw r29, r0
 /* 00003CE4 41820010 */ beq lbl_00003CF4
 /* 00003CE8 3860006C */ li r3, 0x6c
-/* 00003CEC 4BFFC4C1 */ bl u_play_sound
+/* 00003CEC 4BFFC4C1 */ bl u_play_sound_0
 /* 00003CF0 93BF0018 */ stw r29, 0x18(r31)
 lbl_00003CF4:
 /* 00003CF4 A07E0000 */ lhz r3, 0(r30)
 /* 00003CF8 546005EF */ rlwinm. r0, r3, 0, 0x17, 0x17
 /* 00003CFC 41820050 */ beq lbl_00003D4C
 /* 00003D00 3860006A */ li r3, 0x6a
-/* 00003D04 4BFFC4A9 */ bl u_play_sound
+/* 00003D04 4BFFC4A9 */ bl u_play_sound_0
 /* 00003D08 801F0018 */ lwz r0, 0x18(r31)
 /* 00003D0C 2C000000 */ cmpwi r0, 0
 /* 00003D10 4082001C */ bne lbl_00003D2C
@@ -4178,7 +4178,7 @@ lbl_00003D4C:
 /* 00003D4C 546005AD */ rlwinm. r0, r3, 0, 0x16, 0x16
 /* 00003D50 41820020 */ beq lbl_00003D70
 /* 00003D54 3860006B */ li r3, 0x6b
-/* 00003D58 4BFFC455 */ bl u_play_sound
+/* 00003D58 4BFFC455 */ bl u_play_sound_0
 /* 00003D5C 3860005E */ li r3, 0x5e
 /* 00003D60 48000501 */ bl lbl_00004260
 /* 00003D64 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -4218,8 +4218,8 @@ lbl_00003DD8:
 /* 00003DE0 9421FFE0 */ stwu r1, -0x20(r1)
 /* 00003DE4 BF61000C */ stmw r27, 0xc(r1)
 /* 00003DE8 4BFFC3C5 */ bl func_800B622C
-/* 00003DEC 3C800000 */ lis r4, u_unkInputArr1@ha
-/* 00003DF0 38840000 */ addi r4, r4, u_unkInputArr1@l
+/* 00003DEC 3C800000 */ lis r4, g_currPlayerButtons@ha
+/* 00003DF0 38840000 */ addi r4, r4, g_currPlayerButtons@l
 /* 00003DF4 A0A40004 */ lhz r5, 4(r4)
 /* 00003DF8 3BE40004 */ addi r31, r4, 4
 /* 00003DFC 3C800000 */ lis r4, lbl_10000000@ha
@@ -4231,8 +4231,8 @@ lbl_00003DD8:
 /* 00003E14 3BBC0000 */ addi r29, r28, 0
 /* 00003E18 3BC40000 */ addi r30, r4, 0
 /* 00003E1C 40820018 */ bne lbl_00003E34
-/* 00003E20 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00003E24 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00003E20 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00003E24 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00003E28 A0630004 */ lhz r3, 4(r3)
 /* 00003E2C 54600739 */ rlwinm. r0, r3, 0, 0x1c, 0x1c
 /* 00003E30 41820014 */ beq lbl_00003E44
@@ -4255,14 +4255,14 @@ lbl_00003E64:
 /* 00003E64 7C1E2000 */ cmpw r30, r4
 /* 00003E68 41820010 */ beq lbl_00003E78
 /* 00003E6C 3860006C */ li r3, 0x6c
-/* 00003E70 4BFFC33D */ bl u_play_sound
+/* 00003E70 4BFFC33D */ bl u_play_sound_0
 /* 00003E74 93DB0000 */ stw r30, 0(r27)
 lbl_00003E78:
 /* 00003E78 A09F0000 */ lhz r4, 0(r31)
 /* 00003E7C 548007BD */ rlwinm. r0, r4, 0, 0x1e, 0x1e
 /* 00003E80 40820028 */ bne lbl_00003EA8
-/* 00003E84 3C600000 */ lis r3, u_unkInputArr2@ha
-/* 00003E88 38630000 */ addi r3, r3, u_unkInputArr2@l
+/* 00003E84 3C600000 */ lis r3, g_currPlayerAnalogButtons@ha
+/* 00003E88 38630000 */ addi r3, r3, g_currPlayerAnalogButtons@l
 /* 00003E8C A0630004 */ lhz r3, 4(r3)
 /* 00003E90 546007BD */ rlwinm. r0, r3, 0, 0x1e, 0x1e
 /* 00003E94 40820014 */ bne lbl_00003EA8
@@ -4272,7 +4272,7 @@ lbl_00003E78:
 /* 00003EA4 41820018 */ beq lbl_00003EBC
 lbl_00003EA8:
 /* 00003EA8 38600065 */ li r3, 0x65
-/* 00003EAC 4BFFC301 */ bl u_play_sound
+/* 00003EAC 4BFFC301 */ bl u_play_sound_0
 /* 00003EB0 38000001 */ li r0, 1
 /* 00003EB4 7C00F030 */ slw r0, r0, r30
 /* 00003EB8 7FBD0278 */ xor r29, r29, r0
@@ -4288,7 +4288,7 @@ lbl_00003ED4:
 /* 00003ED8 540005AD */ rlwinm. r0, r0, 0, 0x16, 0x16
 /* 00003EDC 41820020 */ beq lbl_00003EFC
 /* 00003EE0 3860006B */ li r3, 0x6b
-/* 00003EE4 4BFFC2C9 */ bl u_play_sound
+/* 00003EE4 4BFFC2C9 */ bl u_play_sound_0
 /* 00003EE8 38600060 */ li r3, 0x60
 /* 00003EEC 48000375 */ bl lbl_00004260
 /* 00003EF0 3C600000 */ lis r3, gameSubmodeRequest@ha
@@ -7205,7 +7205,7 @@ lbl_000067D8:
 /* 00006A68 C09F0138 */ lfs f4, 0x138(r31)
 /* 00006A6C C0BF013C */ lfs f5, 0x13c(r31)
 /* 00006A70 38A00000 */ li r5, 0
-/* 00006A74 4BFF9739 */ bl func_800AD180
+/* 00006A74 4BFF9739 */ bl preview_draw
 lbl_00006A78:
 /* 00006A78 4BFF9735 */ bl mathutil_mtxA_from_identity
 /* 00006A7C 3C600000 */ lis r3, mathutilData@ha
@@ -7502,7 +7502,7 @@ lbl_00006EA8:
 /* 00006EE0 FC000018 */ frsp f0, f0
 /* 00006EE4 D0010024 */ stfs f0, 0x24(r1)
 /* 00006EE8 40820030 */ bne lbl_00006F18
-/* 00006EEC 4BFF92C1 */ bl func_800676C0
+/* 00006EEC 4BFF92C1 */ bl are_all_continues_unlocked
 /* 00006EF0 2C030000 */ cmpwi r3, 0
 /* 00006EF4 41820014 */ beq lbl_00006F08
 /* 00006EF8 387D0000 */ addi r3, r29, 0
@@ -7517,7 +7517,7 @@ lbl_00006F08:
 lbl_00006F18:
 /* 00006F18 2C190001 */ cmpwi r25, 1
 /* 00006F1C 40820080 */ bne lbl_00006F9C
-/* 00006F20 4BFF928D */ bl func_800676C0
+/* 00006F20 4BFF928D */ bl are_all_continues_unlocked
 /* 00006F24 2C030000 */ cmpwi r3, 0
 /* 00006F28 41820014 */ beq lbl_00006F3C
 /* 00006F2C 387D0000 */ addi r3, r29, 0
@@ -7526,15 +7526,15 @@ lbl_00006F18:
 /* 00006F38 48000078 */ b lbl_00006FB0
 lbl_00006F3C:
 /* 00006F3C 38600006 */ li r3, 6
-/* 00006F40 4BFF926D */ bl func_800675E0
+/* 00006F40 4BFF926D */ bl is_minigame_unlocked
 /* 00006F44 2C030000 */ cmpwi r3, 0
 /* 00006F48 4182003C */ beq lbl_00006F84
 /* 00006F4C 38600007 */ li r3, 7
-/* 00006F50 4BFF925D */ bl func_800675E0
+/* 00006F50 4BFF925D */ bl is_minigame_unlocked
 /* 00006F54 2C030000 */ cmpwi r3, 0
 /* 00006F58 4182002C */ beq lbl_00006F84
 /* 00006F5C 38600008 */ li r3, 8
-/* 00006F60 4BFF924D */ bl func_800675E0
+/* 00006F60 4BFF924D */ bl is_minigame_unlocked
 /* 00006F64 2C030000 */ cmpwi r3, 0
 /* 00006F68 4182001C */ beq lbl_00006F84
 /* 00006F6C 387D0000 */ addi r3, r29, 0
@@ -7615,11 +7615,11 @@ lbl_00006FB0:
 /* 0000708C 3B5A0004 */ addi r26, r26, 4
 /* 00007090 4180FE18 */ blt lbl_00006EA8
 /* 00007094 C01F0160 */ lfs f0, 0x160(r31)
-/* 00007098 3C600000 */ lis r3, lbl_802F1FBC@ha
+/* 00007098 3C600000 */ lis r3, g_totalPlayPoints@ha
 /* 0000709C 380000B0 */ li r0, 0xb0
 /* 000070A0 4CC63182 */ crclr 6
 /* 000070A4 D0010020 */ stfs f0, 0x20(r1)
-/* 000070A8 3B630000 */ addi r27, r3, lbl_802F1FBC@l
+/* 000070A8 3B630000 */ addi r27, r3, g_totalPlayPoints@l
 /* 000070AC C01F0164 */ lfs f0, 0x164(r31)
 /* 000070B0 387D0000 */ addi r3, r29, 0
 /* 000070B4 389E0930 */ addi r4, r30, 0x930
@@ -7680,12 +7680,12 @@ lbl_00006FB0:
 /* 00007190 4BFF901D */ bl set_text_pos
 /* 00007194 7FA3EB78 */ mr r3, r29
 /* 00007198 4BFF9015 */ bl u_draw_text
-/* 0000719C 4BFF9011 */ bl func_800676C0
+/* 0000719C 4BFF9011 */ bl are_all_continues_unlocked
 /* 000071A0 2C030000 */ cmpwi r3, 0
 /* 000071A4 41820108 */ beq lbl_000072AC
 /* 000071A8 C01F0160 */ lfs f0, 0x160(r31)
-/* 000071AC 3C600000 */ lis r3, lbl_802F1FB8@ha
-/* 000071B0 38A30000 */ addi r5, r3, lbl_802F1FB8@l
+/* 000071AC 3C600000 */ lis r3, g_maxPlayPointRecord@ha
+/* 000071B0 38A30000 */ addi r5, r3, g_maxPlayPointRecord@l
 /* 000071B4 4CC63182 */ crclr 6
 /* 000071B8 D0010020 */ stfs f0, 0x20(r1)
 /* 000071BC 7FA3EB78 */ mr r3, r29
@@ -7825,7 +7825,7 @@ lbl_000073C0:
 /* 000073C4 D0010020 */ stfs f0, 0x20(r1)
 /* 000073C8 C01F016C */ lfs f0, 0x16c(r31)
 /* 000073CC D0010024 */ stfs f0, 0x24(r1)
-/* 000073D0 4BFF8DDD */ bl func_800676C0
+/* 000073D0 4BFF8DDD */ bl are_all_continues_unlocked
 /* 000073D4 2C030000 */ cmpwi r3, 0
 /* 000073D8 41820024 */ beq lbl_000073FC
 /* 000073DC 387D0000 */ addi r3, r29, 0
@@ -7837,7 +7837,7 @@ lbl_000073C0:
 /* 000073F4 9801001D */ stb r0, 0x1d(r1)
 /* 000073F8 4800001C */ b lbl_00007414
 lbl_000073FC:
-/* 000073FC 4BFF8DB1 */ bl func_80067664
+/* 000073FC 4BFF8DB1 */ bl get_max_continues
 /* 00007400 38A30000 */ addi r5, r3, 0
 /* 00007404 4CC63182 */ crclr 6
 /* 00007408 387D0000 */ addi r3, r29, 0
@@ -7923,7 +7923,7 @@ lbl_00007414:
 lbl_00007544:
 /* 00007544 3AC0FFFF */ li r22, -1
 /* 00007548 387C0006 */ addi r3, r28, 6
-/* 0000754C 4BFF8C61 */ bl func_800675E0
+/* 0000754C 4BFF8C61 */ bl is_minigame_unlocked
 /* 00007550 2C030000 */ cmpwi r3, 0
 /* 00007554 40820008 */ bne lbl_0000755C
 /* 00007558 3AC00000 */ li r22, 0

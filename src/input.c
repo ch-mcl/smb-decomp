@@ -1,3 +1,4 @@
+#include <float.h>
 #include <math.h>
 #include <string.h>
 
@@ -7,20 +8,21 @@
 #include "ball.h"
 #include "input.h"
 #include "mode.h"
+#include "pool.h"
 
 struct ControllerInfo controllerInfo[4];
 struct ControllerInfo lbl_801F3C60[4];
 u16 analogButtonInfo[4][5];
 s32 controllerRepeatCounts[4];
-u16 u_unkInputArr1[6];
-u16 u_unkInputArr2[6];
+u16 g_currPlayerButtons[6];
+u16 g_currPlayerAnalogButtons[6];
 
 FORCE_BSS_ORDER(controllerInfo);
 FORCE_BSS_ORDER(lbl_801F3C60);
 FORCE_BSS_ORDER(analogButtonInfo);
 FORCE_BSS_ORDER(controllerRepeatCounts);
-FORCE_BSS_ORDER(u_unkInputArr1);
-FORCE_BSS_ORDER(u_unkInputArr2);
+FORCE_BSS_ORDER(g_currPlayerButtons);
+FORCE_BSS_ORDER(g_currPlayerAnalogButtons);
 
 u32 lbl_802F1CD8;
 u32 lbl_802F1CD4;
@@ -473,8 +475,8 @@ void func_80025640(void)
 
     for (i = 0; i < 5; i++)
     {
-        u_unkInputArr1[i] = 0;
-        u_unkInputArr2[i] = 0;
+        g_currPlayerButtons[i] = 0;
+        g_currPlayerAnalogButtons[i] = 0;
     }
 
     switch (gameMode)
@@ -488,13 +490,13 @@ void func_80025640(void)
                 continue;
             for (j = 0; j < 5; j++)
             {
-                u_unkInputArr1[j] |= controllerInfo[i].unk0[j].button;
-                u_unkInputArr2[j] |= analogButtonInfo[i][j];
+                g_currPlayerButtons[j] |= controllerInfo[i].unk0[j].button;
+                g_currPlayerAnalogButtons[j] |= analogButtonInfo[i][j];
             }
         }
         break;
     default:
-        r27 = spritePoolInfo.unkC;
+        r27 = g_poolInfo.playerPool.statusList;
         if (r27 == NULL)
             break;
         for (i = 0; i < 4; i++, r27++)
@@ -512,8 +514,8 @@ void func_80025640(void)
 
             for (j = 0; j < 5; j++)
             {
-                u_unkInputArr1[j] |= controllerInfo[lbl_80206BD0[i]].unk0[j].button;
-                u_unkInputArr2[j] |= analogButtonInfo[lbl_80206BD0[i]][j];
+                g_currPlayerButtons[j] |= controllerInfo[lbl_80206BD0[i]].unk0[j].button;
+                g_currPlayerAnalogButtons[j] |= analogButtonInfo[lbl_80206BD0[i]][j];
             }
         }
         break;

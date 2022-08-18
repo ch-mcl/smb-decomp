@@ -16,7 +16,7 @@
 #include "mathutil.h"
 #include "stage.h"
 
-static struct BGModelSearch bonusMiscFind[] =
+static struct BGModelSearch bonusBgModelFind[] =
 {
     { BG_MDL_CMP_FULL,   "BNS_SHOTSTAR" },
     { BG_MDL_CMP_PREFIX, "STARLIGHT_" },
@@ -26,16 +26,16 @@ static struct BGModelSearch bonusMiscFind[] =
     { BG_MDL_CMP_END,    NULL },
 };
 
-static struct BGModelSearch bonusMainFind[] =
+static struct BGModelSearch bonusBgObjFind[] =
 {
     { BG_MDL_CMP_FULL, "BNS_MAIN" },
     { BG_MDL_CMP_END,  NULL },
 };
 
-void lbl_80061B58(void);
-void lbl_80061BC4(struct Struct80061BC4 *a);
-static int bonus_misc_find_proc(int, struct GMAModelEntry *);
-static int bonus_main_find_proc(int, struct StageBgModel *);
+static void lbl_80061B58(void);
+static void lbl_80061BC4(struct EnvMapSomething *a);
+static int model_find_proc(int, struct GMAModelEntry *);
+static int obj_find_proc(int, struct StageBgObject *);
 
 void bg_bonus_init(void)
 {
@@ -43,60 +43,62 @@ void bg_bonus_init(void)
     int i;
     struct BGBonusStarpoint *starpoint;
 
-    bg_e3_init();
+    bg_default_init();
     backgroundInfo.ballEnvFunc = lbl_80061BC4;
     backgroundInfo.unk98 = lbl_80061B58;
 
     // find models
-    if (work->unk0 == 0)
+    if (!work->initialized)
     {
-        work->starpointsCount = 0;
-        u_search_bg_models(bonusMiscFind, bonus_misc_find_proc);
-        work->unk0 = 1;
+        work->starpointCount = 0;
+        find_background_gma_models(bonusBgModelFind, model_find_proc);
+        work->initialized = TRUE;
     }
-    u_search_bg_models_from_list(
-        decodedStageLzPtr->bgModels,
-        decodedStageLzPtr->bgModelsCount,
-        bonusMainFind,
-        bonus_main_find_proc);
-    u_search_bg_models_from_list(
-        decodedStageLzPtr->fgModels,
-        decodedStageLzPtr->fgModelCount,
-        bonusMainFind,
-        bonus_main_find_proc);
+    find_background_objects(
+        decodedStageLzPtr->bgObjects,
+        decodedStageLzPtr->bgObjectCount,
+        bonusBgObjFind,
+        obj_find_proc);
+    find_background_objects(
+        decodedStageLzPtr->fgObjects,
+        decodedStageLzPtr->fgObjectCount,
+        bonusBgObjFind,
+        obj_find_proc);
 
     starpoint = work->starpoints;
-    for (i = work->starpointsCount; i > 0; i--, starpoint++)
+    for (i = work->starpointCount; i > 0; i--, starpoint++)
     {
-        starpoint->unkC = rand() & 0x7FFF;
-        starpoint->unkE = (((rand() / 32767.0f) * 0.5f + 1.0f) * 65536.0f) / 180.0f;
+        starpoint->pulse = rand() & 0x7FFF;
+        starpoint->pulseSpeed = ((RAND_FLOAT() * 0.5f + 1.0f) * 65536.0f) / 180.0f;
     }
 }
 
 void bg_bonus_main(void)
 {
-    struct BGBonusWork *work = (void *)backgroundInfo.work;
+    struct BGBonusWork *work = backgroundInfo.work;
     int i;
     struct BGBonusStarpoint *starpoint;
     Vec sp8;
 
-    bg_e3_main();
+    bg_default_main();
     if (gamePauseStatus & 0xA)
         return;
 
     starpoint = work->starpoints;
-    for (i = work->starpointsCount; i > 0; i--, starpoint++)
+    for (i = work->starpointCount; i > 0; i--, starpoint++)
     {
-        float f2;
-        starpoint->unkC += starpoint->unkE;
-        f2 = (mathutil_sin(starpoint->unkC) + 1.0f) * 0.25f + 0.5f;
-        starpoint->unk10 = f2 * 1.1f;
-        starpoint->unk14 = f2 * 1.05f;
-        starpoint->unk18 = f2;
-        if (starpoint->unk10 > 1.0f)
-            starpoint->unk10 = 1.0f;
-        if (starpoint->unk14 > 1.0f)
-            starpoint->unk14 = 1.0f;
+        float intensity;
+
+        // Pulse the star's glow (a slightly off-white color)
+        starpoint->pulse += starpoint->pulseSpeed;
+        intensity = (mathutil_sin(starpoint->pulse) + 1.0f) * 0.25f + 0.5f;
+        starpoint->red = intensity * 1.1f;
+        starpoint->green = intensity * 1.05f;
+        starpoint->blue = intensity;
+        if (starpoint->red > 1.0f)
+            starpoint->red = 1.0f;
+        if (starpoint->green > 1.0f)
+            starpoint->green = 1.0f;
     }
 
     mathutil_mtxA_from_identity();
@@ -129,62 +131,64 @@ void bg_bonus_draw(void)
 {
     struct BGBonusWork *work = (void *)backgroundInfo.work;
     int i;
-    Vec sp14;
-    Vec sp8;
+    Vec starPos;
+    Vec bgScale;  // scale of the entire background
     struct BGBonusStarpoint *starpoint;
     struct GMAModel *starlightModel;
-    struct StageBgModel *r27;
+    struct StageBgObject *mainObj;
 
-    bg_e3_draw();
-    r27 = work->unk4;
-    sp8 = r27->scale;
+    bg_default_draw();
+    mainObj = work->mainObj;
+    bgScale = mainObj->scale;
     mathutil_mtxA_from_mtx(lbl_802F1B3C->matrices[0]);
-    mathutil_mtxA_translate(&r27->pos);
-    mathutil_mtxA_rotate_z(r27->rotZ);
-    mathutil_mtxA_rotate_y(r27->rotY);
-    mathutil_mtxA_rotate_x(r27->rotX);
-    mathutil_mtxA_scale(&sp8);
-    avdisp_set_z_mode(1, 3, 0);
-    starlightModel = work->starlightModel;
+    mathutil_mtxA_translate(&mainObj->pos);
+    mathutil_mtxA_rotate_z(mainObj->rotZ);
+    mathutil_mtxA_rotate_y(mainObj->rotY);
+    mathutil_mtxA_rotate_x(mainObj->rotX);
+    mathutil_mtxA_scale(&bgScale);
 
-    for (i = work->starpointsCount, starpoint = work->starpoints; i > 0; i--, starpoint++)
+    avdisp_set_z_mode(GX_ENABLE, GX_LEQUAL, GX_DISABLE);
+    starlightModel = work->starlightModel;
+    for (i = work->starpointCount, starpoint = work->starpoints; i > 0; i--, starpoint++)
     {
-        float f30 = (starpoint->unk10 + starpoint->unk14 + starpoint->unk18) * 0.75f;
+        float pulse = (starpoint->red + starpoint->green + starpoint->blue) * 0.75f;
 
         if (lbl_801EEC90.unk0 & (1 << 2))
         {
-            sp14.x = starpoint->unk0.x * sp8.x;
-            sp14.y = starpoint->unk0.y * sp8.y;
-            sp14.z = starpoint->unk0.z * sp8.z;
-            if (func_8000E53C(&sp14) < -(starlightModel->boundSphereRadius * f30))
+            starPos.x = starpoint->u_pos.x * bgScale.x;
+            starPos.y = starpoint->u_pos.y * bgScale.y;
+            starPos.z = starpoint->u_pos.z * bgScale.z;
+            if (func_8000E53C(&starPos) < -(starlightModel->boundSphereRadius * pulse))
                 continue;
         }
-        mathutil_mtxA_push();
-        mathutil_mtxA_translate(&starpoint->unk0);
-        mathutil_mtxA_sq_from_identity();
-        mathutil_mtxA_get_translate_alt(&sp14);
-        if (sp14.z < -30.0f)
-        {
-            float f3 = (26.0f + sp14.z) / sp14.z;
 
-            sp14.x *= f3;
-            sp14.y *= f3;
-            sp14.z *= f3;
-            mathutil_mtxA_set_translate(&sp14);
-            f30 *= f3;
-            mathutil_mtxA_scale_s(f30);
-            avdisp_set_post_multiply_color(starpoint->unk10, starpoint->unk14, starpoint->unk18, 1.0f);
+        // Draw star light billboard
+        mathutil_mtxA_push();
+        mathutil_mtxA_translate(&starpoint->u_pos);
+        mathutil_mtxA_sq_from_identity();
+        mathutil_mtxA_get_translate_alt(&starPos);
+        if (starPos.z < -30.0f)
+        {
+            float f3 = (26.0f + starPos.z) / starPos.z;
+
+            starPos.x *= f3;
+            starPos.y *= f3;
+            starPos.z *= f3;
+            mathutil_mtxA_set_translate(&starPos);
+            pulse *= f3;
+            mathutil_mtxA_scale_s(pulse);
+            avdisp_set_post_mult_color(starpoint->red, starpoint->green, starpoint->blue, 1.0f);
             avdisp_draw_model_culled_sort_translucent(starlightModel);
-            func_8000E3BC();
+            u_reset_post_mult_color();
         }
         mathutil_mtxA_pop();
     }
-    avdisp_set_z_mode(1, 3, 1);
+    avdisp_set_z_mode(GX_ENABLE, GX_LEQUAL, GX_ENABLE);
 }
 
 void bg_bonus_interact(int a)
 {
-    struct Struct8003C550 star;
+    struct Effect star;
     Vec spC;
     float f31;
 
@@ -197,26 +201,26 @@ void bg_bonus_interact(int a)
         star.unk8 = 32;
         star.unk14 = currentBallStructPtr->playerId;
         mathutil_mtxA_from_mtx(cameraInfo[star.unk14].unk1A4);
-        spC.z = -120.0f + (rand() / 32767.0f) * -225.0f;
-        spC.x = spC.z * -(8.0f / 3.0f) * currentCameraStructPtr->sub28.unk38 * ((rand() / 32767.0f) - 0.5f);
+        spC.z = -120.0f + RAND_FLOAT() * -225.0f;
+        spC.x = spC.z * -(8.0f / 3.0f) * currentCameraStructPtr->sub28.unk38 * (RAND_FLOAT() - 0.5f);
         spC.y = spC.z * -1.1f * currentCameraStructPtr->sub28.unk38;
         mathutil_mtxA_rigid_inv_tf_point(&spC, &star.unk34);
         f31 = -spC.z * (1.0f / 300.0f);
-        star.unk40.x = (1.0f + (rand() / 32767.0f)) * f31;
-        star.unk40.y = (-3.0f + (rand() / 32767.0f) * -1.0f) * f31;
-        star.unk40.z = (1.0f + (rand() / 32767.0f)) * f31;
+        star.unk40.x = (1.0f + RAND_FLOAT()) * f31;
+        star.unk40.y = (-3.0f + RAND_FLOAT() * -1.0f) * f31;
+        star.unk40.z = (1.0f + RAND_FLOAT()) * f31;
         spC.x = 0.0f;
         spC.y = 0.0f;
         spC.z = 0.0f;
         mathutil_mtxA_rigid_inv_tf_point(&spC, &spC);
         mathutil_ray_to_euler_xy(&spC, &star.unk34, &star.unk4C, &star.unk4E);
         star.unk50 = rand() & 0x7FFF;
-        u_spawn_effect_object(&star);
+        spawn_effect(&star);
         break;
     }
 }
 
-void lbl_80061B58(void)
+static void lbl_80061B58(void)
 {
     struct BGBonusWork *work = (void *)backgroundInfo.work;
     Mtx sp8;
@@ -231,14 +235,14 @@ void lbl_80061B58(void)
     mathutil_mtxA_to_mtx(work->unk7DC);
 }
 
-void lbl_80061BC4(struct Struct80061BC4 *a)
+static void lbl_80061BC4(struct EnvMapSomething *a)
 {
     struct BGBonusWork *work = (void *)backgroundInfo.work;
     struct Struct80061BC4_sub spC = a->unkC;
 
     GXSetBlendMode_cached(GX_BM_BLEND, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR);
     func_8009AC8C();
-    GXLoadTexObj_cached(work->lightmapTex, spC.u_texMapId);
+    GXLoadTexObj_cached(work->lightmapTexObjs, spC.u_texMapId);
     mathutil_mtxA_push();
     mathutil_mtxA_mult_left(work->unk7AC);
     GXLoadTexMtxImm(mathutilData->mtxA, spC.unk8, GX_MTX3x4);
@@ -260,7 +264,7 @@ void lbl_80061BC4(struct Struct80061BC4 *a)
     GXLoadTexMtxImm(mathutilData->mtxA, spC.unk8, GX_MTX3x4);
     mathutil_mtxA_pop();
     GXLoadTexMtxImm(work->unk77C, spC.unk14, GX_MTX3x4);
-    GXLoadTexObj_cached(work->lightmapATex, spC.u_texMapId);
+    GXLoadTexObj_cached(work->lightmapATexObjs, spC.u_texMapId);
     GXSetTexCoordGen2(spC.unk4, GX_TG_MTX3x4, GX_TG_NRM, spC.unk8, GX_TRUE, spC.unk14);
     GXSetTevDirect(spC.unk0);
     GXSetTevOrder_cached(spC.unk0, spC.unk4, spC.u_texMapId, GX_COLOR_NULL);
@@ -276,45 +280,45 @@ void lbl_80061BC4(struct Struct80061BC4 *a)
     a->unkC = spC;
 }
 
-static int bonus_misc_find_proc(int index, struct GMAModelEntry *entry)
+static int model_find_proc(int index, struct GMAModelEntry *entry)
 {
     struct BGBonusWork *work = backgroundInfo.work;
 
     switch (index)
     {
     case 0:  // BNS_SHOTSTAR
-        work->shotstarModel = entry->modelOffset;
+        work->shotstarModel = entry->model;
         break;
     case 1:  // STARLIGHT_
-        work->starlightModel = entry->modelOffset;
+        work->starlightModel = entry->model;
         break;
     case 2:  // BNS_LIGHTMAP
-        work->lightmapTex = entry->modelOffset->texObjs;
+        work->lightmapTexObjs = entry->model->texObjs;
         break;
     case 3:  // BNS_LIGHTMAP_A
-        work->lightmapATex = entry->modelOffset->texObjs;
+        work->lightmapATexObjs = entry->model->texObjs;
         break;
     case 4:  // STARPOINT
-        if (work->starpointsCount < 64)
+        if (work->starpointCount < 64)
         {
-            struct BGBonusStarpoint *starpoint = &work->starpoints[work->starpointsCount];
+            struct BGBonusStarpoint *starpoint = &work->starpoints[work->starpointCount];
 
-            starpoint->unk0 = entry->modelOffset->boundSphereCenter;
-            work->starpointsCount++;
+            starpoint->u_pos = entry->model->boundSphereCenter;
+            work->starpointCount++;
         }
         break;
     }
     return 1;
 }
 
-static int bonus_main_find_proc(int index, struct StageBgModel *b)
+static int obj_find_proc(int index, struct StageBgObject *bgObj)
 {
     struct BGBonusWork *work = backgroundInfo.work;
 
     switch (index)
     {
     case 0:  // BNS_MAIN
-        work->unk4 = b;
+        work->mainObj = bgObj;
         break;
     }
     return 1;

@@ -61,7 +61,7 @@ struct BackgroundInfo  // size = 0xA8
     Mtx unk48;
     int (*unk78)();
     int (*unk7C)();
-    struct NaomiModel *unk80;
+    struct NlModel *unk80;
     float unk84;
     u8 filler88[4];
     BallEnvFunc unk8C;
@@ -91,26 +91,27 @@ struct BGModelSearch
 
 struct BGJungleCloud
 {
-    struct StageBgModel *bgModel;
+    struct StageBgObject *bgObj;
     Vec unk4;
     Vec unk10;
     Vec unk1C;
-    Mtx unk28;
+    Mtx texMtx;
 };
 
 struct BGJungleWork
 {
     u8 filler0[4];
-    s32 cloudModelCount;
-    struct BGJungleCloud cloudModels[4];
-    s32 unk168;
+    s32 cloudCount;
+    struct BGJungleCloud clouds[4];
+    s32 mode;
 };
 
 /* Sunset background */
 
-struct BGSunsetModel
+// Represents a scrolling cloud or ground layer
+struct BGSunsetLayer
 {
-    struct StageBgModel *bgModel;
+    struct StageBgObject *bgObj;
     Vec texTranslation;
     Vec currTexVel;
     Vec desiredTexVel;
@@ -120,8 +121,8 @@ struct BGSunsetModel
 struct BGSunsetWork
 {
     u8 filler0[4];
-    s32 bgModelsCount;
-    struct BGSunsetModel bgModels[4];
+    s32 layersCount;
+    struct BGSunsetLayer layers[4];
     s32 mode; // 0 for most of stage duration, 1 during last 11s "hurry up" phase
 };
 
@@ -150,24 +151,24 @@ struct BGStormWork
 
 struct BGBonusStarpoint
 {
-    Vec unk0;
-    s16 unkC;
-    s16 unkE;
-    float unk10;
-    float unk14;
-    float unk18;
+    Vec u_pos;
+    s16 pulse;
+    s16 pulseSpeed;
+    float red;
+    float green;
+    float blue;
 };
 
 struct BGBonusWork
 {
-    s32 unk0;
-    struct StageBgModel *unk4;
+    s32 initialized;
+    struct StageBgObject *mainObj;
     struct GMAModel *shotstarModel;
     struct GMAModel *starlightModel;
-    s32 starpointsCount;
+    s32 starpointCount;
     struct BGBonusStarpoint starpoints[64];
-    GXTexObj *lightmapTex;
-    GXTexObj *lightmapATex;
+    GXTexObj *lightmapTexObjs;
+    GXTexObj *lightmapATexObjs;
     Mtx unk71C;
     Mtx unk74C;
     Mtx unk77C;
@@ -178,10 +179,10 @@ struct BGBonusWork
 struct BGEndWork
 {
     s32 unk0;
-    struct GMAModel *unk4;
-    struct GMAModel *unk8;
-    GXTexObj *unkC;
-    GXTexObj *unk10;
+    struct GMAModel *fountainWaterModel;
+    struct GMAModel *waterModel;
+    GXTexObj *waterSpecTex;
+    GXTexObj *cloudTex;
     void (*unk14)();
     void (*unk18)();
     Vec unk1C;
@@ -226,10 +227,87 @@ struct BGWaterWork
     Mtx unk12C;
     Mtx unk15C;
     struct GMAModel *bubbleModel;
-    struct StageBgModel *waterSurface;
+    struct StageBgObject *waterSurface;
 };
 
-typedef int (*Func800567DC)(int, struct StageBgModel *);
+struct BGSpaceWork
+{
+    s32 unk0;
+    Vec corePos;
+    float coreScale;
+    s32 meteorModelCount;
+    struct GMAModel *meteorModels[8];
+    s32 unk38;
+    float unk3C;
+    struct StageBgObject *saturn;
+    GXTexObj *saturnIndMap;
+    Vec unk48;
+    float unk54;
+    float unk58;
+    float unk5C;
+    float unk60;
+    Mtx unk64;
+    float unk94[2][3];
+};
+
+struct BGSandWork_sub_sub
+{
+    struct GMAModel *unk0;
+    float unk4;
+    float unk8;
+    s16 unkC;
+    s16 unkE;
+};
+
+struct BGSandWork_sub
+{
+    Vec unk0;
+    float unkC;
+    float unk10;
+    float unk14;
+    Vec unk18;
+    float unk24;
+    float unk28;
+    float unk2C;
+    float unk30;
+    struct BGSandWork_sub_sub unk34[6];
+};
+
+struct BGSandWork
+{
+    s32 unk0;
+    Vec unk4;
+    float unk10;
+    float unk14;
+    float unk18;
+    Vec unk1C;
+    Vec unk28;
+    GXTexObj *shadowMapTex;
+    GXTexObj *unk38;
+    GXTexObj *sandTex;
+    u32 unk40;
+    struct StageBgObject *pyramidClouds[8];
+    Vec unk64;
+    Vec unk70;
+    u32 unk7C;
+    struct BGSandWork_sub unk80[8];
+    struct StageBgObject *fountainWater[6];
+    struct GMAModel *unk538[2];
+    struct GMAModel *waterAUraModel;
+    struct GMAModel *waterBModel;
+    struct GMAModel *waterBUraModel;
+    GXTexObj *fountainIndirectTex;
+    GXTexObj *fountainGradientTex;
+    struct GMAModel *unk554;
+    struct GMAModel *unk558;
+    struct GMAModel *unk55C;
+    struct GMAModel *unk560;
+    struct BGSandWork_sub *unk564;
+    u8 filler568[4];
+};
+
+typedef int (*BgModelFindProc)(int, struct GMAModelEntry *);
+typedef int (*BgObjFindProc)(int, struct StageBgObject *);
 
 extern struct BackgroundInfo backgroundInfo;
 // extern ? bgDrawFuncs;
@@ -245,14 +323,14 @@ void func_8005507C(void);
 void preload_bg_files(int);
 void load_bg_files(int bgId);
 void background_interact(int);
-void bg_e3_init(void);
-void bg_e3_main(void);
-void bg_e3_finish(void);
-void bg_e3_draw(void);
-void bg_e3_interact(int);
-void animate_bg_models(struct StageBgModel *bgModels, int bgModelCount, float timeSeconds);
-void draw_bg_models();
-void func_80055C6C(Mtx a, struct UnkStruct8005562C_child2 *b);
+void bg_default_init(void);
+void bg_default_main(void);
+void bg_default_finish(void);
+void bg_default_draw(void);
+void bg_default_interact(int);
+void animate_bg_objects(struct StageBgObject *bgModels, int bgModelCount, float timeSeconds);
+void draw_bg_objects();
+void draw_bg_flipbooks(Mtx a, struct StageFlipbookAnims *b);
 void bg_night_init(void);
 void bg_night_main(void);
 void bg_night_finish(void);
@@ -278,9 +356,9 @@ void bg_bowling_main(void);
 void bg_bowling_finish(void);
 void bg_bowling_draw(void);
 void bg_bowling_interact(int);
-int func_80056610(u32 **a, void *b);
-void u_search_bg_models(struct BGModelSearch *a, int (*func)(int, struct GMAModelEntry *));
-void u_search_bg_models_from_list(struct StageBgModel *r28, int r30_, struct BGModelSearch *a, Func800567DC b);
+int func_80056610(struct NlModel *a, struct NlModel *b);
+void find_background_gma_models(struct BGModelSearch *a, BgModelFindProc func);
+void find_background_objects(struct StageBgObject *r28, int r30_, struct BGModelSearch *a, BgObjFindProc b);
 void func_80056934(void);
 void func_800569B4(int);
 void bg_old_bluesky_init(void);
@@ -351,7 +429,7 @@ void bg_old_water_finish(void);
 void bg_old_water_draw(void);
 void bg_old_water_interact(int);
 int func_8005AD80();
-int func_8005AE1C();
+int func_8005AE1C(struct NlModel *, struct NlModel *);
 void bg_jungle_init(void);
 void bg_jungle_main(void);
 void bg_jungle_finish(void);
@@ -406,5 +484,6 @@ void bg_end_init(void);
 void bg_end_main(void);
 void bg_end_finish(void);
 void bg_end_draw(void);
+void bg_end_interact(int);
 
 #endif

@@ -8,10 +8,13 @@
 #include <dolphin.h>
 
 #include "global.h"
+#include "course.h"
 #include "event.h"
 #include "input.h"
 #include "mathutil.h"
 #include "mode.h"
+#include "recplay.h"
+#include "sound.h"
 #include "sprite.h"
 
 struct StringEntry
@@ -114,7 +117,7 @@ struct
     u8 unk4;
     u8 difficulty;
     u8 floorNum;
-    u8 unk7;
+    u8 character;
     u32 unk8;
     u32 unkC;
     /*0x0010*/ u8 bannerImg[0x1800];
@@ -132,7 +135,7 @@ struct ReplayFileInfo
     u8 unk4;
     u8 difficulty;
     u8 floorNum;
-    u8 unk7;
+    u8 character;
     u32 unk8;
     u32 unkC;
     u32 fileSize;
@@ -757,7 +760,7 @@ void init_gamedata_file(void)
 void init_replay_file_data(void)
 {
     DVDFileInfo file;
-    struct ReplayInfo sp88;
+    struct ReplayHeader sp88;
     char category[12];
     char replayFileName[68];
     OSCalendarTime calendarTime;
@@ -765,7 +768,7 @@ void init_replay_file_data(void)
     void *buffer = OSAlloc(0x1800);
     if (buffer == NULL)
         OSPanic("memcard.c", 1014, "cannot OSAlloc");
-    u_get_replay_info(11, &sp88);
+    get_replay_header(11, &sp88);
 
     // copy banner image
     if (DVDOpen("preview/96x32.tpl", &file) == 0)
@@ -850,7 +853,7 @@ void init_replay_file_data(void)
     memcardReplayData->unk4 = sp88.stageId;
     memcardReplayData->difficulty = sp88.difficulty;
     memcardReplayData->floorNum = sp88.floorNum;
-    memcardReplayData->unk7 = sp88.unk5;
+    memcardReplayData->character = sp88.character;
     memcardReplayData->unk8 = sp88.unk10;
 
     memcardReplayData->unkC = (u64)memcardInfo.time / (OS_BUS_CLOCK_SPEED / 4);
@@ -1805,7 +1808,7 @@ void check_read_memcard_file_result(void)
         if (memcardInfo.statusFlags & MC_STATUS_REPLAY_FILE)
         {
             if (memcardReplayData->crc == mathutil_calc_crc16(memcardInfo.fileSize - 2, (u8 *)memcardReplayData + 2)
-             && func_8004C6DC(memcardReplayData->unk2050) != 0)
+             && decompress_replay(memcardReplayData->unk2050) != 0)
             {
                 memcardInfo.statusFlags |= (1 << 3);
                 memcardInfo.state = MC_STATE_ERROR;
@@ -2187,7 +2190,7 @@ void replay_list_open_and_read(void)
                 replay->unk4 = 1;
                 replay->difficulty = 0;
                 replay->floorNum = 0;
-                replay->unk7 = 0;
+                replay->character = 0;
                 replay->unk8 = 0;
                 replay->unkC = 0;
             }
@@ -2197,7 +2200,7 @@ void replay_list_open_and_read(void)
                 replay->unk4 = memcardReplayData->unk4;
                 replay->difficulty = memcardReplayData->difficulty;
                 replay->floorNum = memcardReplayData->floorNum;
-                replay->unk7 = memcardReplayData->unk7;
+                replay->character = memcardReplayData->character;
                 replay->unk8 = memcardReplayData->unk8;
                 replay->unkC = memcardReplayData->unkC;
             }
@@ -2575,7 +2578,7 @@ void load_sequence(void)
     switch (memcardInfo.state)
     {
     case MC_STATE_UNK1:
-        if ((u_unkInputArr1[2] & PAD_BUTTON_A)
+        if ((g_currPlayerButtons[2] & PAD_BUTTON_A)
          || !(memcardInfo.statusFlags & (1 << 7)))
         {
             memcardInfo.unk40 = 0x3C;
@@ -2648,7 +2651,7 @@ void save_sequence(void)
     switch (memcardInfo.state)
     {
     case MC_STATE_UNK1:
-        if ((u_unkInputArr1[2] & PAD_BUTTON_A)
+        if ((g_currPlayerButtons[2] & PAD_BUTTON_A)
          || !(memcardInfo.statusFlags & (1 << 7)))
         {
             memcardInfo.unk40 = 0x3C;
@@ -2701,23 +2704,23 @@ void save_sequence(void)
         open_memcard_file();
         break;
     case 9:
-        if ((u_unkInputArr1[2] & PAD_BUTTON_LEFT)
-         || (u_unkInputArr2[2] & PAD_BUTTON_LEFT))
+        if ((g_currPlayerButtons[2] & PAD_BUTTON_LEFT)
+         || (g_currPlayerAnalogButtons[2] & PAD_BUTTON_LEFT))
         {
             if (lbl_802F21B1 == 0)
-                func_8002B5C8(0x6C);
+                u_play_sound_1(0x6C);
             lbl_802F21B1 = 1;
         }
-        if ((u_unkInputArr1[2] & PAD_BUTTON_RIGHT)
-         || (u_unkInputArr2[2] & PAD_BUTTON_RIGHT))
+        if ((g_currPlayerButtons[2] & PAD_BUTTON_RIGHT)
+         || (g_currPlayerAnalogButtons[2] & PAD_BUTTON_RIGHT))
         {
             if (lbl_802F21B1 == 1)
-                func_8002B5C8(0x6C);
+                u_play_sound_1(0x6C);
             lbl_802F21B1 = 0;
         }
-        if (u_unkInputArr1[2] & PAD_BUTTON_A)
+        if (g_currPlayerButtons[2] & PAD_BUTTON_A)
         {
-            func_8002B5C8(0x6A);
+            u_play_sound_1(0x6A);
             memcardInfo.statusFlags &= ~(1 << 10);
             if (lbl_802F21B1 == 0)
             {
@@ -2744,23 +2747,23 @@ void save_sequence(void)
     case 0xD:
         if (memcardInfo.statusFlags & (1 << 10))
         {
-            if ((u_unkInputArr1[2] & PAD_BUTTON_LEFT)
-             || (u_unkInputArr2[2] & PAD_BUTTON_LEFT))
+            if ((g_currPlayerButtons[2] & PAD_BUTTON_LEFT)
+             || (g_currPlayerAnalogButtons[2] & PAD_BUTTON_LEFT))
             {
                 if (lbl_802F21B1 == 0)
-                    func_8002B5C8(0x6C);
+                    u_play_sound_1(0x6C);
                 lbl_802F21B1 = 1;
             }
-            if ((u_unkInputArr1[2] & PAD_BUTTON_RIGHT)
-             || (u_unkInputArr2[2] & PAD_BUTTON_RIGHT))
+            if ((g_currPlayerButtons[2] & PAD_BUTTON_RIGHT)
+             || (g_currPlayerAnalogButtons[2] & PAD_BUTTON_RIGHT))
             {
                 if (lbl_802F21B1 == 1)
-                    func_8002B5C8(0x6C);
+                    u_play_sound_1(0x6C);
                 lbl_802F21B1 = 0;
             }
-            if (!(u_unkInputArr1[2] & PAD_BUTTON_A))
+            if (!(g_currPlayerButtons[2] & PAD_BUTTON_A))
                 break;
-            func_8002B5C8(0x6A);
+            u_play_sound_1(0x6A);
             memcardInfo.statusFlags &= ~(1 << 10);
             if (lbl_802F21B1 == 0)
             {
@@ -2834,9 +2837,9 @@ void replay_save_sequence(void)
     switch (memcardInfo.state)
     {
     case 1:
-        if (u_unkInputArr1[2] & PAD_BUTTON_A)
+        if (g_currPlayerButtons[2] & PAD_BUTTON_A)
         {
-            func_8002B5C8(0x6A);
+            u_play_sound_1(0x6A);
             memcardInfo.unk40 = 0x3C;
             memcardInfo.state = 2;
         }
@@ -2860,23 +2863,23 @@ void replay_save_sequence(void)
         check_verify_filesystem_result();
         break;
     case 9:
-        if ((u_unkInputArr1[2] & PAD_BUTTON_LEFT)
-         || (u_unkInputArr2[2] & PAD_BUTTON_LEFT))
+        if ((g_currPlayerButtons[2] & PAD_BUTTON_LEFT)
+         || (g_currPlayerAnalogButtons[2] & PAD_BUTTON_LEFT))
         {
             if (lbl_802F21B1 == 0)
-                func_8002B5C8(0x6C);
+                u_play_sound_1(0x6C);
             lbl_802F21B1 = 1;
         }
-        if ((u_unkInputArr1[2] & PAD_BUTTON_RIGHT)
-         || (u_unkInputArr2[2] & PAD_BUTTON_RIGHT))
+        if ((g_currPlayerButtons[2] & PAD_BUTTON_RIGHT)
+         || (g_currPlayerAnalogButtons[2] & PAD_BUTTON_RIGHT))
         {
             if (lbl_802F21B1 == 1)
-                func_8002B5C8(0x6C);
+                u_play_sound_1(0x6C);
             lbl_802F21B1 = 0;
         }
-        if (u_unkInputArr1[2] & PAD_BUTTON_A)
+        if (g_currPlayerButtons[2] & PAD_BUTTON_A)
         {
-            func_8002B5C8(0x6A);
+            u_play_sound_1(0x6A);
             memcardInfo.statusFlags &= ~(1 << 10);
             if (lbl_802F21B1 == 0)
             {
@@ -2918,7 +2921,7 @@ void replay_save_sequence(void)
         break;
     case 0x11:
         init_replay_file_data();
-        func_8004C69C(memcardReplayData->unk2050);
+        compress_replay(memcardReplayData->unk2050);
         memcardReplayData->crc = mathutil_calc_crc16(memcardInfo.fileSize - 2, (u8 *)memcardReplayData + 2);
         write_memcard_file(memcardReplayData);
         break;
@@ -2950,9 +2953,9 @@ void replay_list_sequence(void)
     switch (memcardInfo.state)
     {
     case 1:
-        if (u_unkInputArr1[2] & PAD_BUTTON_A)
+        if (g_currPlayerButtons[2] & PAD_BUTTON_A)
         {
-            func_8002B5C8(0x6A);
+            u_play_sound_1(0x6A);
             memcardInfo.unk40 = 0x3C;
             memcardInfo.state = 2;
         }
@@ -3103,7 +3106,7 @@ void ev_memcard_init(void)
     if (!(memcardInfo.statusFlags & MC_STATUS_REPLAY_FILE))
         memcardInfo.unk44 = 0x5C04;
     else if (memcardMode == MC_MODE_SAVE_REPLAY)
-        memcardInfo.unk44 = func_8004C668() + 0x2050;
+        memcardInfo.unk44 = u_calc_compressed_replay_size() + 0x2050;
     else if (memcardMode == MC_MODE_LOAD_REPLAY)
         memcardInfo.unk44 = replayFileInfo[lbl_802F21C0].fileSize;
     else
@@ -3124,16 +3127,16 @@ void ev_memcard_init(void)
         memcardGameData = NULL;
     }
     if (!(memcardInfo.statusFlags & (1 << 6)))
-        u_unkInputArr1[2] = 0;
+        g_currPlayerButtons[2] = 0;
 }
 
 void ev_memcard_main(void)
 {
     if ((memcardInfo.statusFlags & (1 << 7))
      && memcardInfo.state == 1
-     && (u_unkInputArr1[2] & PAD_BUTTON_B))
+     && (g_currPlayerButtons[2] & PAD_BUTTON_B))
     {
-        func_8002B5C8(0x6B);
+        u_play_sound_1(0x6B);
         memcardInfo.state = MC_STATE_ERROR;
         memcardInfo.statusFlags |= (1 << 8);
     }
@@ -3146,12 +3149,12 @@ void ev_memcard_main(void)
     if (memcardInfo.statusFlags & MC_STATUS_ERROR)
     {
         memcardInfo.statusFlags &= ~((1 << 15) | (1 << 17) | MC_STATUS_WRITE_IN_PROGRESS);
-        if (u_unkInputArr1[2] & PAD_BUTTON_B)
+        if (g_currPlayerButtons[2] & PAD_BUTTON_B)
         {
-            func_8002B5C8(0x6B);
+            u_play_sound_1(0x6B);
             memcardInfo.unk42 = 0;
             memcardInfo.statusFlags &= ~MC_STATUS_ERROR;
-            u_unkInputArr1[2] = 0;
+            g_currPlayerButtons[2] = 0;
         }
         else
         {
